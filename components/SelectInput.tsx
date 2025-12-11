@@ -18,7 +18,7 @@ const SelectInput: React.FC<SelectInputProps> = ({ id, label, value, onChange, o
         <Icon className="absolute left-3 top-3 text-amplia-textDim group-focus-within:text-amplia-accent transition-colors w-5 h-5" aria-hidden="true" />
         <select
           id={id}
-          className="w-full bg-amplia-bg border border-amplia-border rounded-lg py-3 pl-10 pr-4 text-white focus:ring-2 focus:ring-amplia-accent focus:border-transparent outline-none appearance-none transition-all cursor-pointer"
+          className="w-full bg-amplia-bg border border-amplia-border rounded-lg py-3 pl-10 pr-4 text-amplia-text focus:ring-2 focus:ring-amplia-accent focus:border-transparent outline-none appearance-none transition-all cursor-pointer"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >

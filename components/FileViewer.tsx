@@ -19,11 +19,11 @@ const FileViewer: React.FC<FileViewerProps> = ({ files }) => {
   if (!files || files.length === 0) return null;
 
   return (
-    <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden flex flex-col h-full">
+    <div className="bg-amplia-surface rounded-lg border border-amplia-border overflow-hidden flex flex-col h-full">
       <div 
         role="tablist" 
         aria-label="Configuration Files" 
-        className="flex border-b border-slate-700 overflow-x-auto"
+        className="flex border-b border-amplia-border overflow-x-auto bg-amplia-bg"
       >
         {files.map((file, index) => (
           <button
@@ -35,8 +35,8 @@ const FileViewer: React.FC<FileViewerProps> = ({ files }) => {
             onClick={() => setActiveTab(index)}
             className={`px-4 py-3 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amplia-accent ${
               activeTab === index
-                ? 'bg-slate-700 text-white border-b-2 border-amplia-accent'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                ? 'bg-amplia-surface text-amplia-text border-b-2 border-amplia-accent'
+                : 'text-amplia-textDim hover:text-amplia-text hover:bg-amplia-surface'
             }`}
           >
             <FileCode size={14} aria-hidden="true" />
@@ -49,13 +49,13 @@ const FileViewer: React.FC<FileViewerProps> = ({ files }) => {
         role="tabpanel"
         id={`panel-${activeTab}`}
         aria-labelledby={`tab-${activeTab}`}
-        className="relative flex-1 bg-slate-900 group"
+        className="relative flex-1 bg-[#1e1e1e] group" // Keep code background dark always
         tabIndex={0}
       >
          <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
             <button 
               onClick={handleCopy}
-              className="p-2 bg-slate-800 text-slate-300 rounded hover:bg-slate-700 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-amplia-accent"
+              className="p-2 bg-gray-700 text-gray-300 rounded hover:bg-gray-600 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-amplia-accent"
               title="Copy to clipboard"
               aria-label="Copy code to clipboard"
             >
@@ -64,7 +64,7 @@ const FileViewer: React.FC<FileViewerProps> = ({ files }) => {
          </div>
          
          <div className="p-4 overflow-auto h-full max-h-[500px]">
-            <p className="text-xs text-slate-500 mb-4 border-b border-slate-800 pb-2">
+            <p className="text-xs text-gray-400 mb-4 border-b border-gray-700 pb-2">
               {files[activeTab].description}
             </p>
             <pre className="font-mono text-sm text-blue-300 leading-relaxed">

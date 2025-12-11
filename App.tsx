@@ -37,7 +37,8 @@ import {
   RefreshCw,
   Bug,
   LayoutTemplate,
-  Search
+  Search,
+  Mail
 } from 'lucide-react';
 import { ProjectType, DeploymentTarget, AppState, DeploymentConfig, LogEntry, Language, User, PlanTier, Plan, AuthView, DeploymentRecord, ErrorAnalysis } from './types';
 import { generateDeploymentConfig, generateDeploymentLogs, analyzeDeploymentError, analyzeRepo } from './services/geminiService';
@@ -170,6 +171,10 @@ const TRANSLATIONS = {
     payBtn: "Pay",
     processing: "Processing...",
     perMonth: "/month",
+    // Social Login
+    btnGoogle: "Continue with Google",
+    btnGithub: "Continue with GitHub",
+    or: "or",
     // FAQ
     faqTitle: "Frequently Asked Questions",
     faqSubtitle: "Everything you need to know about OpsFlow.",
@@ -305,6 +310,10 @@ const TRANSLATIONS = {
     payBtn: "Pagar",
     processing: "A processar...",
     perMonth: "/mês",
+    // Social Login
+    btnGoogle: "Continuar com Google",
+    btnGithub: "Continuar com GitHub",
+    or: "ou",
     // FAQ
     faqTitle: "Perguntas Frequentes",
     faqSubtitle: "Tudo o que precisa de saber sobre o OpsFlow.",
@@ -440,6 +449,10 @@ const TRANSLATIONS = {
     payBtn: "Pagar",
     processing: "Procesando...",
     perMonth: "/mes",
+    // Social Login
+    btnGoogle: "Continuar con Google",
+    btnGithub: "Continuar con GitHub",
+    or: "o",
     // FAQ
     faqTitle: "Preguntas Frecuentes",
     faqSubtitle: "Todo lo que necesita saber sobre OpsFlow.",
@@ -462,7 +475,7 @@ const TRANSLATIONS = {
       },
       {
         q: "¿Puedo exportar los archivos generados?",
-        a: "Absolutamente. Durante la fase de revisión, puede copiar el contenido de los Dockerfiles y otras configuraciones para usar directamente en su proyecto."
+        a: "Absolutamente. Durante a fase de revisión, puede copiar el contenido de los Dockerfiles y otras configuraciones para usar directamente en su proyecto."
       }
     ],
     // Landing
@@ -511,6 +524,15 @@ const TRANSLATIONS = {
   }
 };
 
+const GoogleIcon = () => (
+  <svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg">
+    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+  </svg>
+);
+
 const App: React.FC = () => {
   // --- STATE ---
   const [appState, setAppState] = useState<AppState>(AppState.INPUT);
@@ -523,27 +545,28 @@ const App: React.FC = () => {
     return (localStorage.getItem('opsflow_theme') as 'light' | 'dark') || 'dark';
   });
   
-  // --- MISSING STATE ---
+  // App Inputs
   const [projectType, setProjectType] = useState<ProjectType>(ProjectType.NODE);
   const [target, setTarget] = useState<DeploymentTarget>(DeploymentTarget.DIGITALOCEAN);
+  
+  // Git / Manual
   const [details, setDetails] = useState("");
   const [repoUrl, setRepoUrl] = useState("");
   const [branch, setBranch] = useState("main");
   const [inputType, setInputType] = useState<'manual' | 'git'>('manual');
   
+  // Processing
   const [config, setConfig] = useState<DeploymentConfig | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [errorAnalysis, setErrorAnalysis] = useState<ErrorAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [shouldFail, setShouldFail] = useState(false);
+  const [isScanning, setIsScanning] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(false);
   
   // Theme effect
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('opsflow_theme', theme);
   }, [theme]);
 
@@ -567,6 +590,23 @@ const App: React.FC = () => {
     }
   };
 
+  const handleScanRepo = async () => {
+     if (!repoUrl) {
+         alert(t.errInvalidUrl);
+         return;
+     }
+     setIsScanning(true);
+     try {
+         const summary = await analyzeRepo(repoUrl, branch, lang);
+         setDetails(summary);
+     } catch(e) {
+         console.error(e);
+         alert(t.errRepoScan);
+     } finally {
+         setIsScanning(false);
+     }
+  };
+
   const handleDeploy = async () => {
     setAppState(AppState.DEPLOYING);
     setLogs([]);
@@ -583,9 +623,9 @@ const App: React.FC = () => {
             // Auto analyze if error
             if (!success) {
                 // mocking error log entries
-                const errorLogs = logMessages.map(m => ({ 
+                const errorLogs: LogEntry[] = logMessages.map(m => ({ 
                     timestamp: new Date().toISOString().split('T')[1].split('.')[0], 
-                    level: 'info' as const, 
+                    level: 'info', 
                     message: m 
                 }));
                 // Mark last few as error
@@ -627,30 +667,50 @@ const App: React.FC = () => {
       setErrorAnalysis(null);
   };
 
+  const handleSocialLogin = (provider: 'google' | 'github') => {
+    setIsAuthLoading(true);
+    // Simulate API delay
+    setTimeout(() => {
+        setUser({
+            id: provider === 'google' ? 'google-123' : 'gh-123',
+            name: provider === 'google' ? 'Google User' : 'GitHub User',
+            email: provider === 'google' ? 'user@gmail.com' : 'dev@github.com',
+            plan: 'BASIC',
+            deploymentsUsed: 2,
+            lastBillingDate: new Date().toISOString(),
+            history: []
+        });
+        setAuthView(AuthView.APP);
+        setIsAuthLoading(false);
+    }, 1500);
+  };
+
   // Render
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-slate-950 text-slate-200' : 'bg-slate-50 text-slate-800'} transition-colors duration-300 font-sans`}>
+    <div className="min-h-screen bg-amplia-bg text-amplia-text transition-colors duration-300 font-sans selection:bg-amplia-accent selection:text-amplia-bg">
         {/* Navbar */}
-        <nav className={`border-b ${theme === 'dark' ? 'border-slate-800 bg-slate-900/50' : 'border-slate-200 bg-white/50'} backdrop-blur-md sticky top-0 z-50`}>
+        <nav className="border-b border-amplia-border bg-amplia-bg/80 backdrop-blur-md sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-2 cursor-pointer" onClick={() => setAuthView(AuthView.LANDING)}>
-                    <Rocket className="text-blue-500" size={24} />
-                    <span className="font-bold text-xl tracking-tight">OpsFlow</span>
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amplia-accent to-blue-600 flex items-center justify-center shadow-lg shadow-amplia-accent/20">
+                      <Rocket className="text-white" size={20} />
+                    </div>
+                    <span className="font-bold text-xl tracking-tight text-amplia-text">OpsFlow</span>
                 </div>
                 
                 <div className="flex items-center gap-4">
-                     <button onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')} className="p-2 rounded-full hover:bg-slate-800/10 dark:hover:bg-slate-800 transition-colors">
+                     <button onClick={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')} className="p-2 rounded-full hover:bg-amplia-surface text-amplia-textDim hover:text-amplia-text transition-colors">
                         {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                      </button>
                      
                      <div className="relative group">
-                        <button className="flex items-center gap-1 text-sm font-medium hover:text-blue-400 transition-colors">
+                        <button className="flex items-center gap-1 text-sm font-medium hover:text-amplia-accent transition-colors">
                             <Globe size={16} />
                             {lang.toUpperCase()}
                         </button>
-                        <div className="absolute right-0 mt-2 w-32 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity invisible group-hover:visible pointer-events-none group-hover:pointer-events-auto overflow-hidden">
+                        <div className="absolute right-0 mt-2 w-32 bg-amplia-surface border border-amplia-border rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity invisible group-hover:visible pointer-events-none group-hover:pointer-events-auto overflow-hidden">
                             {(['en', 'pt', 'es'] as Language[]).map(l => (
-                                <button key={l} onClick={() => setLang(l)} className="block w-full text-left px-4 py-2 text-sm hover:bg-slate-700 text-slate-300 hover:text-white">
+                                <button key={l} onClick={() => setLang(l)} className="block w-full text-left px-4 py-2 text-sm hover:bg-amplia-bg text-amplia-textDim hover:text-amplia-text">
                                     {l === 'en' ? 'English' : l === 'pt' ? 'Português' : 'Español'}
                                 </button>
                             ))}
@@ -658,12 +718,12 @@ const App: React.FC = () => {
                      </div>
 
                      {user ? (
-                         <button onClick={() => setAuthView(AuthView.HISTORY)} className="flex items-center gap-2 text-sm font-medium hover:text-blue-400">
+                         <button onClick={() => setAuthView(AuthView.HISTORY)} className="flex items-center gap-2 text-sm font-medium hover:text-amplia-accent">
                             <UserIcon size={16} />
                             {user.name}
                          </button>
                      ) : (
-                         <button onClick={() => setAuthView(AuthView.LOGIN)} className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                         <button onClick={() => setAuthView(AuthView.LOGIN)} className="bg-amplia-text text-amplia-bg hover:bg-amplia-textDim px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                             {t.ctaLogin}
                          </button>
                      )}
@@ -675,17 +735,24 @@ const App: React.FC = () => {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             {authView === AuthView.LANDING && (
                 <div className="text-center py-20">
-                    <h1 className="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amplia-surface border border-amplia-border text-xs font-medium text-amplia-accent mb-8 shadow-sm">
+                       <span className="relative flex h-2 w-2">
+                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amplia-accent opacity-75"></span>
+                         <span className="relative inline-flex rounded-full h-2 w-2 bg-amplia-accent"></span>
+                       </span>
+                       v2.1 Now Available
+                    </div>
+                    <h1 className="text-5xl font-extrabold mb-6 bg-gradient-to-b from-amplia-text to-amplia-textDim bg-clip-text text-transparent">
                         {t.landingHero}
                     </h1>
-                    <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+                    <p className="text-xl text-amplia-textDim mb-10 max-w-2xl mx-auto">
                         {t.landingSub}
                     </p>
                     <div className="flex justify-center gap-4">
-                        <button onClick={() => { setUser({ id: '1', name: 'Demo User', email: 'demo@opsflow.ai', plan: 'TRIAL', deploymentsUsed: 0, lastBillingDate: new Date().toISOString(), history: [] }); setAuthView(AuthView.APP); }} className="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg shadow-blue-500/25">
+                        <button onClick={() => { setUser({ id: '1', name: 'Demo User', email: 'demo@opsflow.ai', plan: 'TRIAL', deploymentsUsed: 0, lastBillingDate: new Date().toISOString(), history: [] }); setAuthView(AuthView.APP); }} className="bg-amplia-accent hover:bg-amplia-accentHover text-amplia-bg px-8 py-3 rounded-xl font-bold text-lg transition-all transform hover:scale-105 shadow-lg shadow-amplia-accent/25">
                             {t.ctaStart}
                         </button>
-                        <button onClick={() => window.open('https://github.com', '_blank')} className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-3 rounded-xl font-bold text-lg transition-all border border-slate-700 flex items-center gap-2">
+                        <button onClick={() => window.open('https://github.com', '_blank')} className="bg-amplia-surface hover:bg-amplia-bg text-amplia-text px-8 py-3 rounded-xl font-bold text-lg transition-all border border-amplia-border flex items-center gap-2">
                             <Github size={20} /> GitHub
                         </button>
                     </div>
@@ -695,57 +762,67 @@ const App: React.FC = () => {
             {authView === AuthView.APP && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-8rem)]">
                     {/* Left Panel: Controls */}
-                    <div className="lg:col-span-4 bg-slate-900/50 rounded-2xl border border-slate-800 p-6 flex flex-col h-full overflow-y-auto backdrop-blur-sm">
+                    <div className="lg:col-span-4 bg-amplia-surface rounded-2xl border border-amplia-border p-6 flex flex-col h-full overflow-y-auto shadow-xl">
                          {appState === AppState.INPUT && (
                              <div className="space-y-6">
                                  <div>
-                                    <h2 className="text-xl font-bold mb-1">{t.title}</h2>
-                                    <p className="text-sm text-slate-400">{t.heroDesc}</p>
+                                    <h2 className="text-xl font-bold mb-1 text-amplia-text">{t.title}</h2>
+                                    <p className="text-sm text-amplia-textDim">{t.heroDesc}</p>
                                  </div>
                                  
-                                 <div className="flex p-1 bg-slate-800 rounded-lg">
+                                 <div className="flex p-1 bg-amplia-bg rounded-lg border border-amplia-border">
                                     <button 
                                         onClick={() => setInputType('manual')}
-                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${inputType === 'manual' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${inputType === 'manual' ? 'bg-amplia-surface text-amplia-text shadow-sm' : 'text-amplia-textDim hover:text-amplia-text'}`}
                                     >
+                                        <FileText size={14} />
                                         {t.tabManual}
                                     </button>
                                     <button 
                                         onClick={() => setInputType('git')}
-                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${inputType === 'git' ? 'bg-slate-700 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                                        className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${inputType === 'git' ? 'bg-amplia-surface text-amplia-text shadow-sm' : 'text-amplia-textDim hover:text-amplia-text'}`}
                                     >
+                                        <Github size={14} />
                                         {t.tabGit}
                                     </button>
                                  </div>
 
                                  {inputType === 'git' && (
-                                     <div className="space-y-4">
+                                     <div className="space-y-4 p-4 bg-amplia-bg/50 rounded-lg border border-amplia-border border-dashed">
                                          <div className="space-y-2">
-                                             <label className="text-sm font-medium text-slate-300">{t.lblRepoUrl}</label>
-                                             <div className="relative">
-                                                 <Github className="absolute left-3 top-3 text-slate-500" size={18} />
+                                             <label className="text-sm font-medium text-amplia-textDim">{t.lblRepoUrl}</label>
+                                             <div className="relative group">
+                                                 <Github className="absolute left-3 top-3 text-amplia-textDim group-focus-within:text-amplia-accent transition-colors" size={18} />
                                                  <input 
                                                     type="text" 
                                                     value={repoUrl}
                                                     onChange={e => setRepoUrl(e.target.value)}
                                                     placeholder={t.phRepoUrl}
-                                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                                    className="w-full bg-amplia-bg border border-amplia-border rounded-lg py-2.5 pl-10 pr-4 text-sm text-amplia-text focus:ring-2 focus:ring-amplia-accent focus:border-transparent outline-none transition-all"
                                                  />
                                              </div>
                                          </div>
                                           <div className="space-y-2">
-                                             <label className="text-sm font-medium text-slate-300">{t.lblBranch}</label>
-                                             <div className="relative">
-                                                 <GitBranch className="absolute left-3 top-3 text-slate-500" size={18} />
+                                             <label className="text-sm font-medium text-amplia-textDim">{t.lblBranch}</label>
+                                             <div className="relative group">
+                                                 <GitBranch className="absolute left-3 top-3 text-amplia-textDim group-focus-within:text-amplia-accent transition-colors" size={18} />
                                                  <input 
                                                     type="text" 
                                                     value={branch}
                                                     onChange={e => setBranch(e.target.value)}
                                                     placeholder={t.phBranch}
-                                                    className="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                                                    className="w-full bg-amplia-bg border border-amplia-border rounded-lg py-2.5 pl-10 pr-4 text-sm text-amplia-text focus:ring-2 focus:ring-amplia-accent focus:border-transparent outline-none transition-all"
                                                  />
                                              </div>
                                          </div>
+                                         <button 
+                                            onClick={handleScanRepo}
+                                            disabled={isScanning}
+                                            className="w-full py-2 bg-amplia-surface border border-amplia-border hover:border-amplia-accent hover:text-amplia-accent text-amplia-textDim text-sm rounded-lg flex items-center justify-center gap-2 transition-all"
+                                         >
+                                            {isScanning ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+                                            {isScanning ? t.scanning : t.btnScan}
+                                         </button>
                                      </div>
                                  )}
 
@@ -768,19 +845,19 @@ const App: React.FC = () => {
                                  />
 
                                  <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-300">{inputType === 'git' ? t.lblGitContext : t.lblDetails}</label>
+                                    <label className="text-sm font-medium text-amplia-textDim">{inputType === 'git' ? t.lblGitContext : t.lblDetails}</label>
                                     <textarea 
                                         value={details}
                                         onChange={(e) => setDetails(e.target.value)}
                                         placeholder={t.lblDetailsPlaceholder}
-                                        className="w-full h-32 bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none"
+                                        className="w-full h-32 bg-amplia-bg border border-amplia-border rounded-lg p-3 text-sm text-amplia-text focus:ring-2 focus:ring-amplia-accent focus:border-transparent outline-none resize-none transition-all placeholder-amplia-textDim/50"
                                     />
-                                    <p className="text-xs text-slate-500">{t.lblDetailsHint}</p>
+                                    <p className="text-xs text-amplia-textDim">{t.lblDetailsHint}</p>
                                  </div>
 
                                  <button 
                                     onClick={handleGenerate}
-                                    className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:shadow-blue-500/25"
+                                    className="w-full bg-amplia-accent hover:bg-amplia-accentHover text-amplia-bg font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all hover:shadow-lg hover:shadow-amplia-accent/25"
                                  >
                                     <Zap size={18} />
                                     {t.btnGenerate}
@@ -790,19 +867,19 @@ const App: React.FC = () => {
 
                          {appState !== AppState.INPUT && (
                             <div className="flex flex-col h-full">
-                                <div className="flex items-center gap-2 mb-6 pb-6 border-b border-slate-700">
-                                    <div className={`p-2 rounded-lg ${appState === AppState.SUCCESS ? 'bg-green-500/20 text-green-400' : appState === AppState.ERROR ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                                <div className="flex items-center gap-2 mb-6 pb-6 border-b border-amplia-border">
+                                    <div className={`p-2 rounded-lg ${appState === AppState.SUCCESS ? 'bg-amplia-success/20 text-amplia-success' : appState === AppState.ERROR ? 'bg-amplia-error/20 text-amplia-error' : 'bg-amplia-accent/20 text-amplia-accent'}`}>
                                         {appState === AppState.GENERATING ? <Loader2 className="animate-spin" size={24} /> :
                                          appState === AppState.SUCCESS ? <CheckCircle size={24} /> :
                                          appState === AppState.ERROR ? <AlertTriangle size={24} /> :
                                          <Bot size={24} />}
                                     </div>
                                     <div>
-                                        <h2 className="font-bold">{appState === AppState.GENERATING ? t.loadingTitle : 
+                                        <h2 className="font-bold text-amplia-text">{appState === AppState.GENERATING ? t.loadingTitle : 
                                                                    appState === AppState.REVIEW ? t.sectionAnalysis : 
                                                                    appState === AppState.DEPLOYING ? t.statusDeploying :
                                                                    appState === AppState.SUCCESS ? t.statusSuccess : t.statusFailed}</h2>
-                                        <p className="text-xs text-slate-400">{appState === AppState.GENERATING ? t.loadingDesc : 
+                                        <p className="text-xs text-amplia-textDim">{appState === AppState.GENERATING ? t.loadingDesc : 
                                                                                  appState === AppState.REVIEW ? t.helpContext.REVIEW :
                                                                                  appState === AppState.DEPLOYING ? t.helpContext.DEPLOYING :
                                                                                  appState === AppState.SUCCESS ? t.msgSuccess : t.agentDesc}</p>
@@ -811,26 +888,26 @@ const App: React.FC = () => {
                                 
                                 {config && (
                                     <div className="space-y-4 flex-1">
-                                        <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                                        <div className="bg-amplia-bg p-4 rounded-lg border border-amplia-border">
                                             <div className="flex justify-between items-center mb-2">
-                                                <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{t.lblCost}</span>
-                                                <DollarSign size={16} className="text-green-400" />
+                                                <span className="text-xs text-amplia-textDim uppercase tracking-wider font-semibold">{t.lblCost}</span>
+                                                <DollarSign size={16} className="text-amplia-success" />
                                             </div>
-                                            <p className="text-lg font-mono font-medium">{config.estimatedCost}</p>
+                                            <p className="text-lg font-mono font-medium text-amplia-text">{config.estimatedCost}</p>
                                         </div>
-                                        <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                                        <div className="bg-amplia-bg p-4 rounded-lg border border-amplia-border">
                                             <div className="flex justify-between items-center mb-2">
-                                                <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">{t.lblSecurity}</span>
-                                                <ShieldCheck size={16} className="text-blue-400" />
+                                                <span className="text-xs text-amplia-textDim uppercase tracking-wider font-semibold">{t.lblSecurity}</span>
+                                                <ShieldCheck size={16} className="text-amplia-accent" />
                                             </div>
-                                            <p className="text-sm">{config.securityRating}</p>
+                                            <p className="text-sm text-amplia-text">{config.securityRating}</p>
                                         </div>
-                                        <div className="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                                            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold block mb-2">{t.lblRecommendations}</span>
+                                        <div className="bg-amplia-bg p-4 rounded-lg border border-amplia-border">
+                                            <span className="text-xs text-amplia-textDim uppercase tracking-wider font-semibold block mb-2">{t.lblRecommendations}</span>
                                             <ul className="space-y-2">
                                                 {config.recommendations.map((rec, i) => (
-                                                    <li key={i} className="text-xs text-slate-300 flex gap-2">
-                                                        <span className="text-blue-500">•</span> {rec}
+                                                    <li key={i} className="text-xs text-amplia-text flex gap-2">
+                                                        <span className="text-amplia-accent">•</span> {rec}
                                                     </li>
                                                 ))}
                                             </ul>
@@ -838,28 +915,28 @@ const App: React.FC = () => {
                                     </div>
                                 )}
 
-                                <div className="mt-auto pt-6 border-t border-slate-700 space-y-3">
+                                <div className="mt-auto pt-6 border-t border-amplia-border space-y-3">
                                     {appState === AppState.REVIEW && (
                                         <>
                                             <div className="flex items-center gap-2 mb-2">
-                                                <input type="checkbox" id="failMode" checked={shouldFail} onChange={e => setShouldFail(e.target.checked)} className="rounded bg-slate-800 border-slate-600 text-blue-600 focus:ring-blue-500" />
-                                                <label htmlFor="failMode" className="text-xs text-slate-400">{t.lblSimulateFailure}</label>
+                                                <input type="checkbox" id="failMode" checked={shouldFail} onChange={e => setShouldFail(e.target.checked)} className="rounded bg-amplia-bg border-amplia-border text-amplia-accent focus:ring-amplia-accent" />
+                                                <label htmlFor="failMode" className="text-xs text-amplia-textDim">{t.lblSimulateFailure}</label>
                                             </div>
-                                            <button onClick={handleDeploy} className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                                            <button onClick={handleDeploy} className="w-full bg-amplia-success hover:bg-green-500 text-amplia-bg font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
                                                 <Rocket size={18} /> {t.btnDeploy}
                                             </button>
-                                            <button onClick={reset} className="w-full bg-transparent hover:bg-slate-800 text-slate-400 hover:text-white py-2 rounded-lg text-sm transition-all">
+                                            <button onClick={reset} className="w-full bg-transparent hover:bg-amplia-bg text-amplia-textDim hover:text-amplia-text py-2 rounded-lg text-sm transition-all">
                                                 {t.btnCancel}
                                             </button>
                                         </>
                                     )}
                                     {(appState === AppState.SUCCESS || appState === AppState.ERROR) && (
-                                        <button onClick={reset} className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
+                                        <button onClick={reset} className="w-full bg-amplia-surface hover:bg-amplia-bg text-amplia-text border border-amplia-border font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all">
                                             <RefreshCw size={18} /> {t.btnRestart}
                                         </button>
                                     )}
                                     {appState === AppState.ERROR && !errorAnalysis && (
-                                        <button onClick={handleAnalyzeError} disabled={isAnalyzing} className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50">
+                                        <button onClick={handleAnalyzeError} disabled={isAnalyzing} className="w-full bg-amplia-warning text-amplia-bg font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50">
                                             {isAnalyzing ? <Loader2 className="animate-spin" size={18} /> : <Bug size={18} />} 
                                             {isAnalyzing ? t.agentDiagnosing : t.btnAnalyze}
                                         </button>
@@ -870,13 +947,13 @@ const App: React.FC = () => {
                     </div>
                     
                     {/* Right Panel: Display */}
-                    <div className="lg:col-span-8 bg-slate-900/50 rounded-2xl border border-slate-800 p-1 flex flex-col h-full overflow-hidden backdrop-blur-sm shadow-2xl">
+                    <div className="lg:col-span-8 bg-amplia-surface rounded-2xl border border-amplia-border p-1 flex flex-col h-full overflow-hidden shadow-2xl">
                          {appState === AppState.INPUT || appState === AppState.GENERATING ? (
-                             <div className="h-full flex flex-col items-center justify-center text-slate-600">
+                             <div className="h-full flex flex-col items-center justify-center text-amplia-textDim">
                                  {appState === AppState.GENERATING ? (
                                      <div className="text-center">
-                                         <Loader2 className="animate-spin text-blue-500 mx-auto mb-4" size={48} />
-                                         <p className="text-slate-300 font-medium animate-pulse">{t.loadingDesc}</p>
+                                         <Loader2 className="animate-spin text-amplia-accent mx-auto mb-4" size={48} />
+                                         <p className="text-amplia-text font-medium animate-pulse">{t.loadingDesc}</p>
                                      </div>
                                  ) : (
                                      <>
@@ -892,13 +969,13 @@ const App: React.FC = () => {
                                                         setTarget(tmp.target);
                                                         setDetails(tmp.details);
                                                     }}
-                                                    className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 p-4 rounded-xl text-left transition-all hover:scale-105 group"
+                                                    className="bg-amplia-bg hover:bg-amplia-surface border border-amplia-border p-4 rounded-xl text-left transition-all hover:scale-105 group hover:border-amplia-accent/50"
                                                 >
                                                     <div className="flex items-center justify-between mb-2">
-                                                        <span className="font-bold text-slate-200">{tmp.name}</span>
-                                                        <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-blue-400" />
+                                                        <span className="font-bold text-amplia-text">{tmp.name}</span>
+                                                        <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity text-amplia-accent" />
                                                     </div>
-                                                    <div className="text-xs text-slate-500 line-clamp-2">{tmp.details}</div>
+                                                    <div className="text-xs text-amplia-textDim line-clamp-2">{tmp.details}</div>
                                                 </button>
                                             ))}
                                         </div>
@@ -913,20 +990,20 @@ const App: React.FC = () => {
                                     <Terminal logs={logs} title={`Deploying to ${target}...`} />
                                  </div>
                                  {errorAnalysis && (
-                                     <div className="h-1/3 bg-amber-900/10 border-t border-amber-900/30 p-4 overflow-y-auto">
-                                         <h3 className="text-amber-500 font-bold flex items-center gap-2 mb-2">
+                                     <div className="h-1/3 bg-amplia-warning/10 border-t border-amplia-warning/30 p-4 overflow-y-auto">
+                                         <h3 className="text-amplia-warning font-bold flex items-center gap-2 mb-2">
                                              <Bot size={18} /> {t.agentTitle}
                                          </h3>
                                          <div className="space-y-2 text-sm">
-                                             <p><span className="text-amber-400 font-medium">{t.lblDiagnosis}:</span> {errorAnalysis.diagnosis}</p>
-                                             <p><span className="text-amber-400 font-medium">{t.agentSolution}:</span> {errorAnalysis.solution}</p>
-                                             <div className="mt-2 bg-black/30 p-2 rounded border border-amber-900/30 font-mono text-xs text-amber-200">
+                                             <p><span className="text-amplia-warning font-medium">{t.lblDiagnosis}:</span> <span className="text-amplia-text">{errorAnalysis.diagnosis}</span></p>
+                                             <p><span className="text-amplia-warning font-medium">{t.agentSolution}:</span> <span className="text-amplia-text">{errorAnalysis.solution}</span></p>
+                                             <div className="mt-2 bg-black/30 p-2 rounded border border-amplia-warning/30 font-mono text-xs text-amplia-warning/80">
                                                  {errorAnalysis.fixedContext}
                                              </div>
                                              <button onClick={() => {
                                                  setDetails(prev => prev + "\n\nFIX REQUEST: " + errorAnalysis.fixedContext);
                                                  reset();
-                                             }} className="mt-2 text-xs bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 px-3 py-1 rounded border border-amber-600/30 transition-colors">
+                                             }} className="mt-2 text-xs bg-amplia-warning/20 hover:bg-amplia-warning/40 text-amplia-warning px-3 py-1 rounded border border-amplia-warning/30 transition-colors">
                                                  {t.btnApplyFix}
                                              </button>
                                          </div>
@@ -940,20 +1017,56 @@ const App: React.FC = () => {
             
             {(authView === AuthView.LOGIN || authView === AuthView.REGISTER) && (
                 <div className="flex items-center justify-center h-[calc(100vh-10rem)]">
-                    <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
+                    <div className="w-full max-w-md bg-amplia-surface border border-amplia-border rounded-2xl p-8 shadow-2xl">
                         <div className="text-center mb-8">
-                            <h2 className="text-2xl font-bold">{authView === AuthView.LOGIN ? t.loginTitle : t.registerTitle}</h2>
-                            <p className="text-slate-400 text-sm">{authView === AuthView.LOGIN ? t.loginDesc : t.registerDesc}</p>
+                            <h2 className="text-2xl font-bold text-amplia-text">{authView === AuthView.LOGIN ? t.loginTitle : t.registerTitle}</h2>
+                            <p className="text-amplia-textDim text-sm">{authView === AuthView.LOGIN ? t.loginDesc : t.registerDesc}</p>
                         </div>
+
+                        {/* Social Login Buttons */}
+                        <div className="space-y-3 mb-6">
+                            <button 
+                                onClick={() => handleSocialLogin('google')}
+                                disabled={isAuthLoading}
+                                className="w-full bg-amplia-surface hover:bg-amplia-bg border border-amplia-border text-amplia-text font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                            >
+                                {isAuthLoading ? <Loader2 size={20} className="animate-spin" /> : <GoogleIcon />}
+                                {t.btnGoogle}
+                            </button>
+                            <button 
+                                onClick={() => handleSocialLogin('github')}
+                                disabled={isAuthLoading}
+                                className="w-full bg-amplia-surface hover:bg-amplia-bg border border-amplia-border text-amplia-text font-medium py-2.5 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                            >
+                                {isAuthLoading ? <Loader2 size={20} className="animate-spin" /> : <Github size={20} />}
+                                {t.btnGithub}
+                            </button>
+                        </div>
+
+                        <div className="relative mb-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-amplia-border"></div>
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-amplia-surface px-2 text-amplia-textDim">{t.or}</span>
+                            </div>
+                        </div>
+
                         <div className="space-y-4">
-                            <input type="email" placeholder={t.emailPlaceholder} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-                            <input type="password" placeholder={t.passwordPlaceholder} className="w-full bg-slate-950 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-                            <button onClick={() => { setUser({id: '1', name: 'User', email: 'test@ops.flow', plan: 'BASIC', deploymentsUsed: 5, lastBillingDate: new Date().toISOString(), history: []}); setAuthView(AuthView.APP); }} className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-colors">
+                            <div className="relative group">
+                                <Mail className="absolute left-3 top-3 text-amplia-textDim group-focus-within:text-amplia-accent transition-colors" size={18} />
+                                <input type="email" placeholder={t.emailPlaceholder} className="w-full bg-amplia-bg border border-amplia-border rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-amplia-accent outline-none text-amplia-text" />
+                            </div>
+                            <div className="relative group">
+                                <Lock className="absolute left-3 top-3 text-amplia-textDim group-focus-within:text-amplia-accent transition-colors" size={18} />
+                                <input type="password" placeholder={t.passwordPlaceholder} className="w-full bg-amplia-bg border border-amplia-border rounded-lg py-2.5 pl-10 pr-4 text-sm focus:ring-2 focus:ring-amplia-accent outline-none text-amplia-text" />
+                            </div>
+                            <button onClick={() => { setUser({id: '1', name: 'User', email: 'test@ops.flow', plan: 'BASIC', deploymentsUsed: 5, lastBillingDate: new Date().toISOString(), history: []}); setAuthView(AuthView.APP); }} className="w-full bg-amplia-accent hover:bg-amplia-accentHover text-amplia-bg font-bold py-3 rounded-lg transition-colors">
                                 {authView === AuthView.LOGIN ? t.btnLogin : t.btnRegister}
                             </button>
                         </div>
                         <div className="mt-6 text-center">
-                            <button onClick={() => setAuthView(authView === AuthView.LOGIN ? AuthView.REGISTER : AuthView.LOGIN)} className="text-sm text-slate-400 hover:text-white transition-colors">
+                            <button onClick={() => setAuthView(authView === AuthView.LOGIN ? AuthView.REGISTER : AuthView.LOGIN)} className="text-sm text-amplia-textDim hover:text-amplia-text transition-colors">
                                 {authView === AuthView.LOGIN ? t.switchRegister : t.switchLogin}
                             </button>
                         </div>
@@ -962,17 +1075,17 @@ const App: React.FC = () => {
             )}
             
             {authView === AuthView.HISTORY && (
-                 <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden min-h-[500px]">
-                     <div className="p-6 border-b border-slate-800 flex justify-between items-center">
-                         <h2 className="text-xl font-bold flex items-center gap-2">
-                             <History size={20} className="text-blue-500" />
+                 <div className="bg-amplia-surface border border-amplia-border rounded-2xl overflow-hidden min-h-[500px]">
+                     <div className="p-6 border-b border-amplia-border flex justify-between items-center">
+                         <h2 className="text-xl font-bold flex items-center gap-2 text-amplia-text">
+                             <History size={20} className="text-amplia-accent" />
                              {t.historyTitle}
                          </h2>
-                         <button onClick={() => setAuthView(AuthView.APP)} className="text-sm text-slate-400 hover:text-white flex items-center gap-1">
+                         <button onClick={() => setAuthView(AuthView.APP)} className="text-sm text-amplia-textDim hover:text-amplia-text flex items-center gap-1">
                              <ArrowRight className="rotate-180" size={14} /> {t.btnBack}
                          </button>
                      </div>
-                     <div className="p-8 text-center text-slate-500">
+                     <div className="p-8 text-center text-amplia-textDim">
                          {t.historyEmpty}
                      </div>
                  </div>
