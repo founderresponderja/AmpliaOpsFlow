@@ -1,0 +1,5 @@
+{
+  "name": "OpsFlow",
+  "description": "An AI-powered DevOps assistant that generates deployment configurations (Docker, CI/CD) and simulates the deployment process for your source code. Part of the Amplia Portfolio.",
+  "requestFramePermissions": []
+}
