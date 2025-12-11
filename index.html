@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: ['class', '[data-theme="dark"]'],
         theme: {
           extend: {
             fontFamily: {
@@ -16,16 +17,16 @@
             },
             colors: {
               amplia: {
-                bg: '#131314',        // Deep AI Studio background
-                surface: '#1E1F20',   // Lighter surface
-                border: '#444746',    // Subtle borders
-                accent: '#A8C7FA',    // Google-like pastel blue
-                accentHover: '#8AB4F8',
-                text: '#E3E3E3',
-                textDim: '#C4C7C5',
-                success: '#81C995',
-                warning: '#FDD663',
-                error: '#F28B82'
+                bg: 'var(--color-bg)',
+                surface: 'var(--color-surface)',
+                border: 'var(--color-border)',
+                accent: 'var(--color-accent)',
+                accentHover: 'var(--color-accent-hover)',
+                text: 'var(--color-text)',
+                textDim: 'var(--color-text-dim)',
+                success: 'var(--color-success)',
+                warning: 'var(--color-warning)',
+                error: 'var(--color-error)'
               }
             }
           }
@@ -40,26 +41,63 @@
         font-style: normal;
       }
       
+      :root {
+        /* Light Mode Defaults */
+        --color-bg: #F0F2F5;
+        --color-surface: #FFFFFF;
+        --color-border: #D1D5DB;
+        --color-accent: #2563EB; /* Blue-600 for better visibility on light */
+        --color-accent-hover: #1D4ED8;
+        --color-text: #111827;
+        --color-text-dim: #4B5563;
+        --color-success: #16A34A;
+        --color-warning: #D97706;
+        --color-error: #DC2626;
+      }
+
+      [data-theme="dark"] {
+        /* Dark Mode Defaults (Original) */
+        --color-bg: #131314;
+        --color-surface: #1E1F20;
+        --color-border: #444746;
+        --color-accent: #A8C7FA;
+        --color-accent-hover: #8AB4F8;
+        --color-text: #E3E3E3;
+        --color-text-dim: #C4C7C5;
+        --color-success: #81C995;
+        --color-warning: #FDD663;
+        --color-error: #F28B82;
+      }
+      
       body {
-        background-color: #131314;
-        color: #E3E3E3;
+        background-color: var(--color-bg);
+        color: var(--color-text);
         font-family: 'Max-Regular', sans-serif;
         font-weight: 400;
+        transition: background-color 0.3s ease, color 0.3s ease;
       }
+      
+      /* Smooth transitions for theme changes */
+      *, *::before, *::after {
+        transition-property: background-color, border-color, color, fill, stroke;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        transition-duration: 150ms;
+      }
+
       /* Custom scrollbar */
       ::-webkit-scrollbar {
         width: 10px;
         height: 10px;
       }
       ::-webkit-scrollbar-track {
-        background: #131314; 
+        background: var(--color-bg); 
       }
       ::-webkit-scrollbar-thumb {
-        background: #444746; 
+        background: var(--color-border); 
         border-radius: 5px;
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: #5E5E5E; 
+        background: var(--color-text-dim); 
       }
       
       .animate-fade-in {

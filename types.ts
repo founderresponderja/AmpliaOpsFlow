@@ -1,3 +1,4 @@
+
 export enum ProjectType {
   NODE = 'Node.js',
   REACT = 'React',
@@ -34,6 +35,12 @@ export interface LogEntry {
   message: string;
 }
 
+export interface ErrorAnalysis {
+  diagnosis: string;
+  solution: string;
+  fixedContext: string;
+}
+
 export enum AppState {
   INPUT = 'INPUT',
   GENERATING = 'GENERATING',
@@ -41,4 +48,46 @@ export enum AppState {
   DEPLOYING = 'DEPLOYING',
   SUCCESS = 'SUCCESS',
   ERROR = 'ERROR'
+}
+
+// --- Monetization Types ---
+
+export type PlanTier = 'TRIAL' | 'BASIC' | 'PRO' | 'PREMIUM';
+
+export interface Plan {
+  id: PlanTier;
+  name: string;
+  price: number;
+  deploymentsPerMonth: number;
+  features: string[];
+}
+
+export interface DeploymentRecord {
+  id: string;
+  date: string; // ISO string
+  projectType: ProjectType;
+  target: DeploymentTarget;
+  status: 'SUCCESS' | 'FAILED';
+  details: string;
+  repoUrl?: string; // Added for Git integration
+  cost: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  plan: PlanTier;
+  deploymentsUsed: number;
+  lastBillingDate: string; // ISO Date string
+  history: DeploymentRecord[];
+}
+
+export enum AuthView {
+  LANDING = 'LANDING',
+  LOGIN = 'LOGIN',
+  REGISTER = 'REGISTER',
+  PRICING = 'PRICING',
+  APP = 'APP',
+  HISTORY = 'HISTORY'
 }
