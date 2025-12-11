@@ -38,9 +38,12 @@ import {
   Bug,
   LayoutTemplate,
   Search,
-  Mail
+  Mail,
+  ListFilter,
+  ArrowUpDown,
+  AlertOctagon
 } from 'lucide-react';
-import { ProjectType, DeploymentTarget, AppState, DeploymentConfig, LogEntry, Language, User, PlanTier, Plan, AuthView, DeploymentRecord, ErrorAnalysis } from './types';
+import { ProjectType, DeploymentTarget, AppState, DeploymentConfig, LogEntry, Language, User, PlanTier, Plan, AuthView, DeploymentRecord, ErrorAnalysis, Priority } from './types';
 import { generateDeploymentConfig, generateDeploymentLogs, analyzeDeploymentError, analyzeRepo } from './services/geminiService';
 import Terminal from './components/Terminal';
 import FileViewer from './components/FileViewer';
@@ -112,6 +115,7 @@ const TRANSLATIONS = {
     heroDesc: "Let OpsFlow analyze your project requirements and generate production-ready deployment configurations tailored to your stack.",
     lblProjectType: "Project Type",
     lblTarget: "Deployment Target",
+    lblPriority: "Deployment Priority",
     lblDetails: "Project Details",
     lblDetailsPlaceholder: "E.g., Needs Redis, PostgreSQL database, environment variables for API keys...",
     lblDetailsHint: "Provide specific requirements to get the best configuration (min 10 chars).",
@@ -175,6 +179,10 @@ const TRANSLATIONS = {
     btnGoogle: "Continue with Google",
     btnGithub: "Continue with GitHub",
     or: "or",
+    // History / Tasks
+    lblSortBy: "Sort by",
+    sortDate: "Date",
+    sortPriority: "Priority",
     // FAQ
     faqTitle: "Frequently Asked Questions",
     faqSubtitle: "Everything you need to know about OpsFlow.",
@@ -251,6 +259,7 @@ const TRANSLATIONS = {
     heroDesc: "Deixe o OpsFlow analisar os requisitos do seu projeto e gerar configurações de implementação prontas para produção adaptadas à sua stack.",
     lblProjectType: "Tipo de Projeto",
     lblTarget: "Destino de Implementação",
+    lblPriority: "Prioridade de Implementação",
     lblDetails: "Detalhes do Projeto",
     lblDetailsPlaceholder: "Ex: Necessita de Redis, base de dados PostgreSQL, variáveis de ambiente...",
     lblDetailsHint: "Forneça requisitos específicos para obter a melhor configuração (mín. 10 caracteres).",
@@ -314,6 +323,10 @@ const TRANSLATIONS = {
     btnGoogle: "Continuar com Google",
     btnGithub: "Continuar com GitHub",
     or: "ou",
+    // History / Tasks
+    lblSortBy: "Ordenar por",
+    sortDate: "Data",
+    sortPriority: "Prioridade",
     // FAQ
     faqTitle: "Perguntas Frequentes",
     faqSubtitle: "Tudo o que precisa de saber sobre o OpsFlow.",
@@ -390,6 +403,7 @@ const TRANSLATIONS = {
     heroDesc: "Deje que OpsFlow analice los requisitos de su proyecto y genere configuraciones de despliegue listas para producción adaptadas a su stack.",
     lblProjectType: "Tipo de Proyecto",
     lblTarget: "Objetivo de Despliegue",
+    lblPriority: "Prioridad de Despliegue",
     lblDetails: "Detalles del Proyecto",
     lblDetailsPlaceholder: "Ej: Necesita Redis, base de datos PostgreSQL, variables de entorno...",
     lblDetailsHint: "Proporcione requisitos específicos para obtener la mejor configuración (mín. 10 caracteres).",
@@ -452,7 +466,11 @@ const TRANSLATIONS = {
     // Social Login
     btnGoogle: "Continuar con Google",
     btnGithub: "Continuar con GitHub",
-    or: "o",
+    or: "ou",
+    // History / Tasks
+    lblSortBy: "Ordenar por",
+    sortDate: "Fecha",
+    sortPriority: "Prioridad",
     // FAQ
     faqTitle: "Preguntas Frecuentes",
     faqSubtitle: "Todo lo que necesita saber sobre OpsFlow.",
@@ -533,6 +551,32 @@ const GoogleIcon = () => (
   </svg>
 );
 
+// --- HELPER FOR HISTORY SORTING ---
+const sortHistory = (history: DeploymentRecord[], sortBy: 'date' | 'priority') => {
+  return [...history].sort((a, b) => {
+    if (sortBy === 'date') {
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    } else {
+      const priorityWeight = { 'High': 3, 'Medium': 2, 'Low': 1 };
+      return priorityWeight[b.priority] - priorityWeight[a.priority];
+    }
+  });
+};
+
+const PriorityBadge = ({ priority }: { priority: Priority }) => {
+  const colors = {
+    'High': 'bg-red-500/20 text-red-500 border-red-500/30',
+    'Medium': 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
+    'Low': 'bg-blue-500/20 text-blue-500 border-blue-500/30'
+  };
+  
+  return (
+    <span className={`px-2 py-0.5 rounded text-xs font-medium border ${colors[priority]}`}>
+      {priority}
+    </span>
+  );
+};
+
 const App: React.FC = () => {
   // --- STATE ---
   const [appState, setAppState] = useState<AppState>(AppState.INPUT);
@@ -548,6 +592,7 @@ const App: React.FC = () => {
   // App Inputs
   const [projectType, setProjectType] = useState<ProjectType>(ProjectType.NODE);
   const [target, setTarget] = useState<DeploymentTarget>(DeploymentTarget.DIGITALOCEAN);
+  const [priority, setPriority] = useState<Priority>('Medium');
   
   // Git / Manual
   const [details, setDetails] = useState("");
@@ -563,6 +608,9 @@ const App: React.FC = () => {
   const [shouldFail, setShouldFail] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(false);
+  
+  // History View
+  const [sortBy, setSortBy] = useState<'date' | 'priority'>('date');
   
   // Theme effect
   useEffect(() => {
@@ -580,7 +628,7 @@ const App: React.FC = () => {
     }
     setAppState(AppState.GENERATING);
     try {
-      const cfg = await generateDeploymentConfig(projectType, target, details, lang, repoUrl);
+      const cfg = await generateDeploymentConfig(projectType, target, details, lang, priority, repoUrl);
       setConfig(cfg);
       setAppState(AppState.REVIEW);
     } catch (e) {
@@ -678,7 +726,11 @@ const App: React.FC = () => {
             plan: 'BASIC',
             deploymentsUsed: 2,
             lastBillingDate: new Date().toISOString(),
-            history: []
+            history: [
+               { id: 'd-1', date: '2023-10-01T10:00:00Z', projectType: ProjectType.NODE, target: DeploymentTarget.DIGITALOCEAN, status: 'SUCCESS', details: 'API Server', priority: 'High', cost: '$10/mo' },
+               { id: 'd-2', date: '2023-10-05T14:30:00Z', projectType: ProjectType.REACT, target: DeploymentTarget.VERCEL, status: 'SUCCESS', details: 'Landing Page', priority: 'Low', cost: '$0/mo' },
+               { id: 'd-3', date: '2023-10-12T09:15:00Z', projectType: ProjectType.PYTHON, target: DeploymentTarget.AWS, status: 'FAILED', details: 'Data Processor', priority: 'Medium', cost: '$25/mo' },
+            ]
         });
         setAuthView(AuthView.APP);
         setIsAuthLoading(false);
@@ -842,6 +894,15 @@ const App: React.FC = () => {
                                     onChange={(v) => setTarget(v as DeploymentTarget)}
                                     options={Object.values(DeploymentTarget)}
                                     icon={Server}
+                                 />
+
+                                 <SelectInput 
+                                    id="priority"
+                                    label={t.lblPriority}
+                                    value={priority}
+                                    onChange={(v) => setPriority(v as Priority)}
+                                    options={['High', 'Medium', 'Low']}
+                                    icon={AlertOctagon}
                                  />
 
                                  <div className="space-y-2">
@@ -1074,19 +1135,100 @@ const App: React.FC = () => {
                 </div>
             )}
             
-            {authView === AuthView.HISTORY && (
+            {authView === AuthView.HISTORY && user && (
                  <div className="bg-amplia-surface border border-amplia-border rounded-2xl overflow-hidden min-h-[500px]">
-                     <div className="p-6 border-b border-amplia-border flex justify-between items-center">
-                         <h2 className="text-xl font-bold flex items-center gap-2 text-amplia-text">
-                             <History size={20} className="text-amplia-accent" />
-                             {t.historyTitle}
-                         </h2>
-                         <button onClick={() => setAuthView(AuthView.APP)} className="text-sm text-amplia-textDim hover:text-amplia-text flex items-center gap-1">
-                             <ArrowRight className="rotate-180" size={14} /> {t.btnBack}
-                         </button>
+                     <div className="p-6 border-b border-amplia-border flex justify-between items-center bg-amplia-bg/50">
+                         <div>
+                             <h2 className="text-xl font-bold flex items-center gap-2 text-amplia-text">
+                                 <History size={20} className="text-amplia-accent" />
+                                 {t.historyTitle}
+                             </h2>
+                             <p className="text-sm text-amplia-textDim mt-1">
+                                {user.history.length} deployments in record
+                             </p>
+                         </div>
+                         <div className="flex items-center gap-4">
+                             <div className="flex items-center bg-amplia-bg rounded-lg border border-amplia-border p-1">
+                                <span className="text-xs font-medium text-amplia-textDim px-2 flex items-center gap-1">
+                                    <ListFilter size={12} /> {t.lblSortBy}:
+                                </span>
+                                <button 
+                                    onClick={() => setSortBy('date')}
+                                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${sortBy === 'date' ? 'bg-amplia-surface text-amplia-text shadow-sm' : 'text-amplia-textDim hover:text-amplia-text'}`}
+                                >
+                                    {t.sortDate}
+                                </button>
+                                <button 
+                                    onClick={() => setSortBy('priority')}
+                                    className={`px-3 py-1 rounded text-xs font-medium transition-colors ${sortBy === 'priority' ? 'bg-amplia-surface text-amplia-text shadow-sm' : 'text-amplia-textDim hover:text-amplia-text'}`}
+                                >
+                                    {t.sortPriority}
+                                </button>
+                             </div>
+                             <button onClick={() => setAuthView(AuthView.APP)} className="text-sm text-amplia-textDim hover:text-amplia-text flex items-center gap-1 px-3 py-2 hover:bg-amplia-bg rounded-lg transition-colors">
+                                 <ArrowRight className="rotate-180" size={14} /> {t.btnBack}
+                             </button>
+                         </div>
                      </div>
-                     <div className="p-8 text-center text-amplia-textDim">
-                         {t.historyEmpty}
+                     
+                     <div className="overflow-x-auto">
+                        {user.history.length === 0 ? (
+                            <div className="p-12 text-center text-amplia-textDim flex flex-col items-center">
+                                <LayoutTemplate size={48} className="mb-4 opacity-20" />
+                                <p>{t.historyEmpty}</p>
+                            </div>
+                        ) : (
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="border-b border-amplia-border bg-amplia-bg/30 text-xs text-amplia-textDim uppercase tracking-wider">
+                                        <th className="p-4 font-medium">{t.colProject}</th>
+                                        <th className="p-4 font-medium">{t.sortPriority}</th>
+                                        <th className="p-4 font-medium">{t.colTarget}</th>
+                                        <th className="p-4 font-medium">{t.colDate}</th>
+                                        <th className="p-4 font-medium text-right">{t.colCost}</th>
+                                        <th className="p-4 font-medium text-right">{t.colStatus}</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-amplia-border">
+                                    {sortHistory(user.history, sortBy).map(record => (
+                                        <tr key={record.id} className="hover:bg-amplia-bg/50 transition-colors group">
+                                            <td className="p-4">
+                                                <div className="font-medium text-amplia-text flex items-center gap-2">
+                                                    {record.projectType === ProjectType.NODE ? <div className="w-2 h-2 rounded-full bg-green-500"></div> :
+                                                     record.projectType === ProjectType.REACT ? <div className="w-2 h-2 rounded-full bg-blue-400"></div> :
+                                                     <div className="w-2 h-2 rounded-full bg-yellow-500"></div>}
+                                                    {record.details || record.projectType}
+                                                </div>
+                                                <div className="text-xs text-amplia-textDim mt-0.5 max-w-[200px] truncate">{record.id}</div>
+                                            </td>
+                                            <td className="p-4">
+                                                <PriorityBadge priority={record.priority} />
+                                            </td>
+                                            <td className="p-4 text-sm text-amplia-textDim">
+                                                {record.target}
+                                            </td>
+                                            <td className="p-4 text-sm text-amplia-textDim font-mono">
+                                                {new Date(record.date).toLocaleDateString()}
+                                                <span className="text-xs opacity-50 ml-1">{new Date(record.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                            </td>
+                                            <td className="p-4 text-right font-mono text-sm text-amplia-text">
+                                                {record.cost}
+                                            </td>
+                                            <td className="p-4 text-right">
+                                                <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                                    record.status === 'SUCCESS' 
+                                                    ? 'bg-amplia-success/10 text-amplia-success' 
+                                                    : 'bg-amplia-error/10 text-amplia-error'
+                                                }`}>
+                                                    {record.status === 'SUCCESS' ? <Check size={12} /> : <AlertOctagon size={12} />}
+                                                    {record.status}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
                      </div>
                  </div>
             )}

@@ -16,6 +16,8 @@ export enum DeploymentTarget {
 
 export type Language = 'en' | 'pt' | 'es';
 
+export type Priority = 'High' | 'Medium' | 'Low';
+
 export interface GeneratedFile {
   filename: string;
   content: string;
@@ -71,6 +73,7 @@ export interface DeploymentRecord {
   details: string;
   repoUrl?: string; // Added for Git integration
   cost: string;
+  priority: Priority;
 }
 
 export interface User {

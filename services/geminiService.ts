@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { ProjectType, DeploymentTarget, DeploymentConfig, Language, ErrorAnalysis, LogEntry } from '../types';
+import { ProjectType, DeploymentTarget, DeploymentConfig, Language, ErrorAnalysis, LogEntry, Priority } from '../types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -16,18 +16,33 @@ export const generateDeploymentConfig = async (
   target: DeploymentTarget,
   details: string,
   lang: Language,
+  priority: Priority,
   repoUrl?: string
 ): Promise<DeploymentConfig> => {
   
   const languageName = getLanguageName(lang);
   
   let contextPrompt = "";
+  let priorityContext = "";
+
+  switch (priority) {
+    case 'High':
+      priorityContext = "This is a HIGH PRIORITY production deployment. Emphasize high availability, strict security policies, redundancy, and performance optimization in the configuration. Cost is secondary.";
+      break;
+    case 'Medium':
+      priorityContext = "This is a standard priority deployment. Balance performance and cost. Use standard security practices.";
+      break;
+    case 'Low':
+      priorityContext = "This is a LOW PRIORITY (e.g., staging/dev) deployment. Prioritize cost minimization and simplicity over redundancy.";
+      break;
+  }
   
   if (repoUrl) {
     contextPrompt = `
       I am connecting a Git repository located at: ${repoUrl}.
       Project Type: ${projectType}.
       Target: ${target}.
+      Priority Level: ${priority}.
       Additional Context provided by user: "${details}".
 
       Please analyze the typical structure of a ${projectType} repository and generate the deployment configuration files assuming standard best practices for this stack. 
@@ -36,12 +51,14 @@ export const generateDeploymentConfig = async (
   } else {
     contextPrompt = `
       I have a ${projectType} project that I want to deploy to ${target}.
+      Priority Level: ${priority}.
       Project Details: ${details}.
     `;
   }
 
   const prompt = `
     ${contextPrompt}
+    ${priorityContext}
     
     Please generate the necessary deployment configuration files (e.g., Dockerfile, nginx.conf, GitHub Actions workflow, or build scripts).
     Also estimate the monthly cost (low traffic) and give a brief security rating and recommendations.
