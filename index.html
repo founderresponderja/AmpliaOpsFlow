@@ -1,18 +1,40 @@
+
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="pt-PT" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpsFlow | Amplia</title>
+    <title>OpsFlow | A IA nº 1 para Desenvolvimento de Aplicações e Deployment</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="OpsFlow: A plataforma líder de IA para desenvolvimento de aplicações. Gere Dockerfiles, CI/CD e configurações Cloud em segundos com Gemini 3 Pro. Otimize o seu workflow #AI #DevOps." />
+    <meta name="keywords" content="IA, Desenvolvimento de Aplicações, Deployment, Docker, CI/CD, Automação, Gemini AI, Cloud Computing, OpsFlow, Software Engineering" />
+    <meta name="author" content="OpsFlow AI Core" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://opsflow.amplia.pt/" />
+    <meta property="og:title" content="OpsFlow | Automação de Desenvolvimento de Aplicações com IA" />
+    <meta property="og:description" content="Transforme código em infraestrutura instantaneamente. A IA mais avançada para engenharia de software." />
+    <meta property="og:image" content="https://opsflow.amplia.pt/og-image.jpg" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://opsflow.amplia.pt/" />
+    <meta property="twitter:title" content="OpsFlow AI - Autonomous App Deployment" />
+    <meta property="twitter:description" content="Boost developer productivity with Gemini 3 Pro AI. #AI #Automation" />
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         darkMode: ['class', '[data-theme="dark"]'],
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Max-Regular', 'sans-serif'],
+              sans: ['Plus Jakarta Sans', 'sans-serif'],
               mono: ['JetBrains Mono', 'monospace'],
             },
             colors: {
@@ -28,99 +50,90 @@
                 warning: 'var(--color-warning)',
                 error: 'var(--color-error)'
               }
+            },
+            animation: {
+              'gradient-x': 'gradient-x 15s ease infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              'gradient-x': {
+                '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+                '50%': { 'background-size': '200% 200%', 'background-position': 'right center' }
+              }
             }
           }
         }
       }
     </script>
     <style>
-      @font-face {
-        font-family: 'Max-Regular';
-        src: local('Max-Regular'), local('Max Regular');
-        font-weight: 400;
-        font-style: normal;
-      }
-      
       :root {
-        /* Light Mode Defaults */
-        --color-bg: #F0F2F5;
+        --color-bg: #F8FAFC;
         --color-surface: #FFFFFF;
-        --color-border: #D1D5DB;
-        --color-accent: #2563EB; /* Blue-600 for better visibility on light */
+        --color-border: #E2E8F0;
+        --color-accent: #2563EB;
         --color-accent-hover: #1D4ED8;
-        --color-text: #111827;
-        --color-text-dim: #4B5563;
-        --color-success: #16A34A;
-        --color-warning: #D97706;
-        --color-error: #DC2626;
+        --color-text: #0F172A;
+        --color-text-dim: #64748B;
+        --color-success: #10B981;
+        --color-warning: #F59E0B;
+        --color-error: #EF4444;
       }
 
       [data-theme="dark"] {
-        /* Dark Mode Defaults (Original) */
-        --color-bg: #131314;
-        --color-surface: #1E1F20;
-        --color-border: #444746;
-        --color-accent: #A8C7FA;
-        --color-accent-hover: #8AB4F8;
-        --color-text: #E3E3E3;
-        --color-text-dim: #C4C7C5;
-        --color-success: #81C995;
-        --color-warning: #FDD663;
-        --color-error: #F28B82;
+        --color-bg: #0A0A0C;
+        --color-surface: #121217;
+        --color-border: #26262E;
+        --color-accent: #38BDF8;
+        --color-accent-hover: #7DD3FC;
+        --color-text: #F1F5F9;
+        --color-text-dim: #94A3B8;
+        --color-success: #34D399;
+        --color-warning: #FBBF24;
+        --color-error: #F87171;
       }
       
       body {
         background-color: var(--color-bg);
         color: var(--color-text);
-        font-family: 'Max-Regular', sans-serif;
-        font-weight: 400;
-        transition: background-color 0.3s ease, color 0.3s ease;
-      }
-      
-      /* Smooth transitions for theme changes */
-      *, *::before, *::after {
-        transition-property: background-color, border-color, color, fill, stroke;
-        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-        transition-duration: 150ms;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        overflow-x: hidden;
       }
 
-      /* Custom scrollbar */
-      ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
+      .glass {
+        background: rgba(var(--color-surface), 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
       }
-      ::-webkit-scrollbar-track {
-        background: var(--color-bg); 
+
+      .page-transition {
+        animation: pageIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       }
-      ::-webkit-scrollbar-thumb {
-        background: var(--color-border); 
-        border-radius: 5px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: var(--color-text-dim); 
-      }
-      
-      .animate-fade-in {
-        animation: fadeIn 0.5s ease-out;
-      }
-      
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
+
+      @keyframes pageIn {
+        from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
       }
+
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
+      ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react/": "https://esm.sh/react@^19.2.1/",
-    "react": "https://esm.sh/react@^19.2.1",
-    "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.1/"
-  }
-}
-</script>
-</head>
+    <script type="importmap">
+    {
+      "imports": {
+        "react/": "https://esm.sh/react@^19.2.1/",
+        "react": "https://esm.sh/react@^19.2.1",
+        "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
+        "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.1/",
+        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.39.0",
+        "jspdf": "https://esm.sh/jspdf@^2.5.1",
+        "@emailjs/browser": "https://esm.sh/@emailjs/browser@^4.4.1"
+      }
+    }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
   </body>

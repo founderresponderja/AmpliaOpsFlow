@@ -1,5 +1,15 @@
 {
-  "name": "OpsFlow",
-  "description": "An AI-powered DevOps assistant that generates deployment configurations (Docker, CI/CD) and simulates the deployment process for your source code. Part of the Amplia Portfolio.",
+  "name": "OpsFlow AI - Autonomous App Development & Deployment Platform",
+  "description": "The world's leading AI-powered application development and deployment assistant. Automate Docker, CI/CD, and Cloud Infrastructure with Gemini 3 Pro. Boost developer productivity with #AI #Automation #Cloud #DevOps.",
+  "keywords": [
+    "AI Application Development",
+    "Autonomous Deployment",
+    "Gemini 3 Pro AI",
+    "Docker Automation",
+    "CI/CD Generator",
+    "Cloud Infrastructure AI",
+    "Software Engineering Productivity",
+    "OpsFlow"
+  ],
   "requestFramePermissions": []
 }

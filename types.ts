@@ -1,9 +1,9 @@
-
 export enum ProjectType {
   NODE = 'Node.js',
   REACT = 'React',
   PYTHON = 'Python/Django/Flask',
   GO = 'Go',
+  DENO = 'Deno / Edge Functions',
   STATIC = 'Static HTML/JS'
 }
 
@@ -11,6 +11,7 @@ export enum DeploymentTarget {
   AWS = 'AWS Elastic Beanstalk',
   DIGITALOCEAN = 'DigitalOcean Droplet',
   VERCEL = 'Vercel',
+  SUPABASE = 'Supabase Edge Functions',
   DOCKER = 'Generic Docker Server'
 }
 
@@ -24,8 +25,23 @@ export interface GeneratedFile {
   description: string;
 }
 
+export interface EnvVar {
+  key: string;
+  value: string;
+  description: string;
+}
+
+export interface DatabaseConfig {
+  type: string;
+  recommendedPoolSize: number;
+  indexingStrategy: string;
+  backupPolicy: string;
+}
+
 export interface DeploymentConfig {
   files: GeneratedFile[];
+  envVars: EnvVar[];
+  dbConfig?: DatabaseConfig;
   estimatedCost: string;
   securityRating: string;
   recommendations: string[];
@@ -52,8 +68,6 @@ export enum AppState {
   ERROR = 'ERROR'
 }
 
-// --- Monetization Types ---
-
 export type PlanTier = 'TRIAL' | 'BASIC' | 'PRO' | 'PREMIUM';
 
 export interface Plan {
@@ -62,18 +76,24 @@ export interface Plan {
   price: number;
   deploymentsPerMonth: number;
   features: string[];
+  lemonSqueezyVariantId?: string;
 }
 
-export interface DeploymentRecord {
+export interface AIPack {
   id: string;
-  date: string; // ISO string
-  projectType: ProjectType;
-  target: DeploymentTarget;
-  status: 'SUCCESS' | 'FAILED';
-  details: string;
-  repoUrl?: string; // Added for Git integration
-  cost: string;
-  priority: Priority;
+  deployments: number;
+  price: number;
+  savings: string;
+  lemonSqueezyVariantId: string;
+}
+
+export interface BillingInfo {
+  nif: string;
+  name: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  country: string;
 }
 
 export interface User {
@@ -82,8 +102,9 @@ export interface User {
   name: string;
   plan: PlanTier;
   deploymentsUsed: number;
-  lastBillingDate: string; // ISO Date string
-  history: DeploymentRecord[];
+  lastBillingDate: string;
+  history: any[];
+  billingInfo?: BillingInfo;
 }
 
 export enum AuthView {
@@ -92,5 +113,6 @@ export enum AuthView {
   REGISTER = 'REGISTER',
   PRICING = 'PRICING',
   APP = 'APP',
-  HISTORY = 'HISTORY'
+  HISTORY = 'HISTORY',
+  BILLING_MODAL = 'BILLING_MODAL'
 }
