@@ -78,7 +78,12 @@ const TRANSLATIONS = {
     btnRegister: "Registo",
     btnLogin: "Entrar",
     quotaLabel: "Quota IA",
-    perfMonitor: "Performance do Motor"
+    perfMonitor: "Performance do Motor",
+    lblApiDocs: "API Docs",
+    lblPrivacy: "Privacidade",
+    lblLegal: "Legal & GDPR",
+    lblContact: "Contacto",
+    copyright: "2025 Amplia Solutions"
   },
   en: {
     heroTitle: "The Future of App Development is ",
@@ -126,12 +131,17 @@ const TRANSLATIONS = {
     btnRegister: "Register",
     btnLogin: "Login",
     quotaLabel: "AI Quota",
-    perfMonitor: "Engine Performance"
+    perfMonitor: "Engine Performance",
+    lblApiDocs: "API Docs",
+    lblPrivacy: "Privacy",
+    lblLegal: "Legal & GDPR",
+    lblContact: "Contact",
+    copyright: "2025 Amplia Solutions"
   },
   es: {
     heroTitle: "El Futuro del desarrollo de aplicaciones es ",
     heroTitleAccent: "Inteligente.",
-    heroDesc: "OpsFlow utiliza IA avanzada para generar Dockerfiles, CI/CD y cloud configs en segundos. Optimice su workflow hoy.",
+    heroDesc: "OpsFlow utiliza IA avanzada para generar Dockerfiles, CI/CD y cloud configs in segundos. Optimice su workflow hoy.",
     lblFeatures: "Ventajas de la Ingeniería con IA",
     feature1Title: "Generación de Blueprints",
     feature1Desc: "Dockerfiles y configs de infraestructura generados al instante para tu stack específico.",
@@ -174,7 +184,12 @@ const TRANSLATIONS = {
     btnRegister: "Registro",
     btnLogin: "Iniciar sesión",
     quotaLabel: "Cuota IA",
-    perfMonitor: "Rendimiento del Motor"
+    perfMonitor: "Rendimiento del Motor",
+    lblApiDocs: "API Docs",
+    lblPrivacy: "Privacidad",
+    lblLegal: "Legal & GDPR",
+    lblContact: "Contacto",
+    copyright: "2025 Amplia Solutions"
   }
 };
 
@@ -423,7 +438,7 @@ const App: React.FC = () => {
                   </div>
                </section>
 
-               {/* Advantages Section (New) */}
+               {/* Advantages Section */}
                <section className="py-24 px-6">
                   <div className="container mx-auto text-center">
                      <h2 className="text-4xl font-black mb-16 tracking-tighter">{t.lblFeatures}</h2>
@@ -448,7 +463,7 @@ const App: React.FC = () => {
                   </div>
                </section>
 
-               {/* Subscription Plans with Details */}
+               {/* Subscription Plans */}
                <section className="py-24 bg-amplia-surface/50 border-t border-amplia-border/20">
                   <div className="container mx-auto px-6 text-center">
                      <h2 className="text-5xl font-black mb-8 tracking-tighter">{t.lblPricing}</h2>
@@ -588,6 +603,7 @@ const App: React.FC = () => {
           )}
        </main>
 
+       {/* Updated Footer */}
        <footer className="border-t border-amplia-border/20 bg-amplia-surface/40 py-20 px-12">
           <div className="container mx-auto text-center space-y-12">
              <div className="flex items-center justify-center gap-4 font-black text-3xl tracking-tighter">
@@ -598,12 +614,15 @@ const App: React.FC = () => {
                 <button onClick={() => setShowCookies(true)} className="hover:text-amplia-accent transition-colors flex items-center gap-2">
                    <Cookie size={12} /> {t.cookieConfigure}
                 </button>
-                <a href="#" className="hover:text-amplia-accent transition-colors">Legal & GDPR</a>
-                <a href="#" className="hover:text-amplia-accent transition-colors">API Docs</a>
-                <a href="#" className="hover:text-amplia-accent transition-colors">Privacy</a>
+                <a href="#" className="hover:text-amplia-accent transition-colors">{t.lblLegal}</a>
+                <a href="#" className="hover:text-amplia-accent transition-colors">{t.lblApiDocs}</a>
+                <a href="#" className="hover:text-amplia-accent transition-colors">{t.lblPrivacy}</a>
+                <a href="mailto:ampliasolutions.pt@gmail.com" className="hover:text-amplia-accent transition-colors flex items-center gap-2">
+                   <Mail size={12} /> {t.lblContact}
+                </a>
              </div>
              <div className="text-[10px] font-black opacity-20 uppercase tracking-[0.5em] pt-12">
-                © {new Date().getFullYear()} OpsFlow AI Core. Optimized for Production.
+                {t.copyright}
              </div>
           </div>
        </footer>
