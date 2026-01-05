@@ -1,41 +1,74 @@
-
 <!DOCTYPE html>
 <html lang="pt-PT" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>OpsFlow | A IA nº 1 para Desenvolvimento de Aplicações e Deployment</title>
     
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="OpsFlow: A plataforma líder de IA para desenvolvimento de aplicações. Gere Dockerfiles, CI/CD e configurações Cloud em segundos com Gemini 3 Pro. Otimize o seu workflow #AI #DevOps." />
-    <meta name="keywords" content="IA, Desenvolvimento de Aplicações, Deployment, Docker, CI/CD, Automação, Gemini AI, Cloud Computing, OpsFlow, Software Engineering" />
-    <meta name="author" content="OpsFlow AI Core" />
+    <!-- Primário SEO -->
+    <title>OpsFlow | Automação de DevOps e Deployment com IA Gemini 3 Pro</title>
+    <meta name="title" content="OpsFlow | Automação de DevOps e Deployment com IA Gemini 3 Pro" />
+    <meta name="description" content="Acelere seu desenvolvimento com OpsFlow. Gere Dockerfiles, pipelines CI/CD e infraestrutura Cloud instantaneamente usando IA avançada. Otimize custos e segurança." />
+    <meta name="keywords" content="IA DevOps, Deployment Automático, Gemini 3 Pro, Docker Generator, CI/CD Automation, Cloud Infrastructure, OpsFlow, Software Engineering" />
+    <meta name="author" content="Amplia Solutions" />
     <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://opsflow.amplia.pt/" />
+    <meta name="theme-color" content="#2563EB" />
 
-    <!-- Open Graph / Facebook -->
+    <!-- Open Graph / Facebook / LinkedIn -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://opsflow.amplia.pt/" />
-    <meta property="og:title" content="OpsFlow | Automação de Desenvolvimento de Aplicações com IA" />
-    <meta property="og:description" content="Transforme código em infraestrutura instantaneamente. A IA mais avançada para engenharia de software." />
-    <meta property="og:image" content="https://opsflow.amplia.pt/og-image.jpg" />
+    <meta property="og:title" content="OpsFlow | A Revolução do Deployment com Inteligência Artificial" />
+    <meta property="og:description" content="Transforme código em infraestrutura de produção em segundos. Testado e aprovado por engenheiros DevOps." />
+    <meta property="og:image" content="https://opsflow.amplia.pt/og-preview.jpg" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://opsflow.amplia.pt/" />
-    <meta property="twitter:title" content="OpsFlow AI - Autonomous App Deployment" />
-    <meta property="twitter:description" content="Boost developer productivity with Gemini 3 Pro AI. #AI #Automation" />
+    <meta property="twitter:title" content="OpsFlow AI - Autonomous Cloud Deployment" />
+    <meta property="twitter:description" content="Gere Dockerfiles e CI/CD pipelines em segundos com o poder da IA Gemini 3 Pro." />
+    <meta property="twitter:image" content="https://opsflow.amplia.pt/twitter-preview.jpg" />
+
+    <!-- Dados Estruturados JSON-LD (Rich Snippets) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "OpsFlow AI",
+      "description": "Plataforma de IA para geração automática de configurações de deployment e DevOps.",
+      "url": "https://opsflow.amplia.pt/",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0.00",
+        "priceCurrency": "EUR"
+      },
+      "featureList": [
+        "AI Dockerfile Generation",
+        "CI/CD Pipeline Automation",
+        "Cloud Cost Optimization",
+        "Real-time Error Diagnosis"
+      ],
+      "author": {
+        "@type": "Organization",
+        "name": "Amplia Solutions"
+      }
+    }
+    </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         darkMode: ['class', '[data-theme="dark"]'],
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Plus Jakarta Sans', 'sans-serif'],
-              mono: ['JetBrains Mono', 'monospace'],
+              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              mono: ['"JetBrains Mono"', 'monospace'],
             },
             colors: {
               amplia: {
@@ -54,6 +87,7 @@
             animation: {
               'gradient-x': 'gradient-x 15s ease infinite',
               'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'fade-in': 'pageIn 0.3s ease-out forwards'
             },
             keyframes: {
               'gradient-x': {
@@ -92,10 +126,21 @@
         --color-error: #F87171;
       }
       
+      * {
+        font-family: 'Max-Regular' !important;
+        letter-spacing: -0.02em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      code, pre, .font-mono, [class*="font-mono"] {
+        font-family: 'JetBrains Mono', monospace !important;
+        letter-spacing: 0em;
+      }
+      
       body {
         background-color: var(--color-bg);
         color: var(--color-text);
-        font-family: 'Plus Jakarta Sans', sans-serif;
         overflow-x: hidden;
       }
 

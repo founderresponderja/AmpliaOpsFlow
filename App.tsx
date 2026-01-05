@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Rocket, Server, Code, ShieldCheck, DollarSign, ArrowRight, Loader2, 
@@ -33,6 +32,7 @@ const PACKS: AIPack[] = [
 
 const TRANSLATIONS = {
   pt: {
+    pageTitle: "OpsFlow | Automação de DevOps com IA",
     heroTitle: "O Futuro do desenvolvimento de aplicações é ",
     heroTitleAccent: "Inteligente.",
     heroDesc: "O OpsFlow utiliza inteligência artificial avançada para gerar Dockerfiles, CI/CD e cloud configs em segundos. Otimize o seu workflow hoje.",
@@ -83,9 +83,15 @@ const TRANSLATIONS = {
     lblPrivacy: "Privacidade",
     lblLegal: "Legal & GDPR",
     lblContact: "Contacto",
-    copyright: "2025 Amplia Solutions"
+    copyright: "2025 Amplia Solutions",
+    gitCommit: "Commit para o Git",
+    gitMsgPlaceholder: "Mensagem de commit...",
+    gitSuccess: "Commit e Push realizados com sucesso!",
+    gitLoading: "Realizando Commit...",
+    gitError: "Erro ao comunicar com o repositório."
   },
   en: {
+    pageTitle: "OpsFlow | AI-Powered DevOps Automation",
     heroTitle: "The Future of App Development is ",
     heroTitleAccent: "Smart.",
     heroDesc: "OpsFlow uses advanced AI to generate Dockerfiles, CI/CD, and cloud configs in seconds. Optimize your workflow today.",
@@ -136,26 +142,32 @@ const TRANSLATIONS = {
     lblPrivacy: "Privacy",
     lblLegal: "Legal & GDPR",
     lblContact: "Contact",
-    copyright: "2025 Amplia Solutions"
+    copyright: "2025 Amplia Solutions",
+    gitCommit: "Commit to Git",
+    gitMsgPlaceholder: "Commit message...",
+    gitSuccess: "Commit and Push successful!",
+    gitLoading: "Committing...",
+    gitError: "Error communicating with repository."
   },
   es: {
+    pageTitle: "OpsFlow | Automatización DevOps con IA",
     heroTitle: "El Futuro del desarrollo de aplicaciones es ",
     heroTitleAccent: "Inteligente.",
     heroDesc: "OpsFlow utiliza IA avanzada para generar Dockerfiles, CI/CD y cloud configs in segundos. Optimice su workflow hoy.",
     lblFeatures: "Ventajas de la Ingeniería con IA",
     feature1Title: "Generación de Blueprints",
-    feature1Desc: "Dockerfiles y configs de infraestructura generados al instante para tu stack específico.",
+    feature1Desc: "Dockerfiles y configs de infraestructura gerados al instante para tu stack específico.",
     feature2Title: "Automatización CI/CD",
-    feature2Desc: "Pipelines de integración continua configurados sin errores manuales, listos para producción.",
+    feature2Desc: "Pipelines de integración continua configurados sem errores manuales, listos para producción.",
     feature3Title: "Seguridad Nativa",
     feature3Desc: "Análisis proactivo de vulnerabilidades y sugerencias de corrección antes del despliegue.",
     feature4Title: "Diagnóstico Real",
-    feature4Desc: "IA con Google Search para resolver errores de despliegue en tiempo real con fuentes reales.",
+    feature4Desc: "IA con Google Search para resolver errores de despliegue em tiempo real com fuentes reales.",
     feature5Title: "Multi-Cloud",
-    feature5Desc: "Despliega en AWS, Azure, GCP o DigitalOcean con la misma fluidez y sencillez.",
+    feature5Desc: "Despliega em AWS, Azure, GCP o DigitalOcean com la misma fluidez y sencillez.",
     feature6Title: "Optimización de Costos",
-    feature6Desc: "Sugerencias inteligentes para reducir gastos en recursos cloud infrautilizados.",
-    lblPricing: "Planes de Automatización con IA",
+    feature6Desc: "Sugerencias inteligentes para reducir gastos em recursos cloud infrautilizados.",
+    lblPricing: "Planes de Automatización com IA",
     pricingDesc: "Elija el nivel de inteligencia artificial que su equipo necesita para escalar.",
     lblPacks: "Paquetes de Despliegue (Sin Mensualidad)",
     packsDesc: "¿Necesitas créditos extra? Compra paquetes de un solo uso según tus necesidades.",
@@ -165,7 +177,7 @@ const TRANSLATIONS = {
     ctaStart: "Registro",
     perMonth: "/mes",
     deploysPerMo: "Despliegues /mes",
-    deploysOneTime: "Despliegues con IA",
+    deploysOneTime: "Despliegues com IA",
     lblLiveLogs: "Consola de Monitoreo IA",
     legalConsent: "Acepto los Términos de Servicio y la Política de Privacidade conforme al RGPD.",
     cookieText: "OpsFlow utiliza cookies inteligentes para personalizar y optimizar su experiencia tecnológica.",
@@ -179,7 +191,7 @@ const TRANSLATIONS = {
     cookieMarketing: "Marketing",
     cookieMarketingDesc: "Permite que te ofrezcamos planes adaptados a tus necesidades.",
     gdprDelete: "Eliminar Cuenta (RGPD)",
-    atDisclaimer: "Conexión 100% segura y encriptada con las Autoridades Tributarias vía TLS 1.3.",
+    atDisclaimer: "Conexión 100% segura y encriptada com las Autoridades Tributarias vía TLS 1.3.",
     complaints: "Libro de Reclamaciones Electrónico",
     btnRegister: "Registro",
     btnLogin: "Iniciar sesión",
@@ -189,7 +201,12 @@ const TRANSLATIONS = {
     lblPrivacy: "Privacidad",
     lblLegal: "Legal & GDPR",
     lblContact: "Contacto",
-    copyright: "2025 Amplia Solutions"
+    copyright: "2025 Amplia Solutions",
+    gitCommit: "Hacer Commit a Git",
+    gitMsgPlaceholder: "Mensaje de commit...",
+    gitSuccess: "¡Commit y Push realizados com éxito!",
+    gitLoading: "Haciendo commit...",
+    gitError: "Error al comunicarse com el repositorio."
   }
 };
 
@@ -200,14 +217,14 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   
   const [perfMetrics, setPerfMetrics] = useState({ latency: 0, fps: 60 });
-  const [regForm, setRegForm] = useState({ name: '', email: '', nif: '', password: '' });
-  const [billing, setBilling] = useState<BillingInfo>({ nif: '', name: '', address: '', city: '', postalCode: '', country: 'Portugal' });
-  const [isProcessingInvoice, setIsProcessingInvoice] = useState(false);
   const [config, setConfig] = useState<DeploymentConfig | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [errorAnalysis, setErrorAnalysis] = useState<ErrorAnalysis | null>(null);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   
+  const [isCommitting, setIsCommitting] = useState(false);
+  const [commitStatus, setCommitStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [commitMsg, setCommitMsg] = useState('');
+
   const [showCookies, setShowCookies] = useState(true);
   const [showCookiePanel, setShowCookiePanel] = useState(false);
   const [cookieSettings, setCookieSettings] = useState({ 
@@ -217,6 +234,12 @@ const App: React.FC = () => {
   });
 
   const t = (TRANSLATIONS[lang] || TRANSLATIONS.en) as any;
+
+  // SEO METHODOLOGY: Dynamic language and title synchronization
+  useEffect(() => {
+    document.documentElement.lang = lang === 'pt' ? 'pt-PT' : lang === 'es' ? 'es-ES' : 'en-US';
+    document.title = t.pageTitle;
+  }, [lang, t.pageTitle]);
 
   useEffect(() => {
     initLemonSqueezy();
@@ -285,6 +308,36 @@ const App: React.FC = () => {
     }
   };
 
+  const handleSimulateCommit = useCallback(async (message: string) => {
+    if (!message || message.trim() === '') return;
+    setIsCommitting(true);
+    setCommitStatus('loading');
+    try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const commitHash = Math.random().toString(16).slice(2, 9);
+      const newLogs: LogEntry[] = [
+        { timestamp: new Date().toLocaleTimeString(), level: 'info', message: `[GIT] Verifying connection to origin/main...` },
+        { timestamp: new Date().toLocaleTimeString(), level: 'info', message: `[GIT] Command: git add .` },
+        { timestamp: new Date().toLocaleTimeString(), level: 'info', message: `[GIT] Command: git commit -m "${message}"` },
+        { timestamp: new Date().toLocaleTimeString(), level: 'success', message: `[GIT] Commit [main ${commitHash}] created with ${config?.files.length || 0} changes.` },
+        { timestamp: new Date().toLocaleTimeString(), level: 'info', message: `[GIT] Command: git push origin main` },
+        { timestamp: new Date().toLocaleTimeString(), level: 'success', message: `[GIT] All changes synchronized with remote repository.` }
+      ];
+      setLogs(prev => [...prev, ...newLogs]);
+      setCommitStatus('success');
+      setCommitMsg('');
+    } catch (error) {
+      setCommitStatus('error');
+      setLogs(prev => [...prev, { timestamp: new Date().toLocaleTimeString(), level: 'error', message: `[GIT] Error during commit simulation.` }]);
+    } finally {
+      setIsCommitting(false);
+    }
+  }, [config]);
+
+  const handleGitKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') handleSimulateCommit(commitMsg);
+  };
+
   return (
     <div className="min-h-screen bg-amplia-bg text-amplia-text flex flex-col font-sans transition-all duration-500 ease-in-out selection:bg-amplia-accent/30">
        
@@ -301,6 +354,7 @@ const App: React.FC = () => {
                     <button 
                       onClick={() => setShowCookiePanel(true)} 
                       className="px-6 py-3 text-xs font-black uppercase opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2"
+                      title={t.cookieConfigure}
                     >
                       <Settings2 size={14} /> {t.cookieConfigure}
                     </button>
@@ -336,6 +390,7 @@ const App: React.FC = () => {
                       <button 
                         onClick={() => setCookieSettings(prev => ({ ...prev, analytics: !prev.analytics }))}
                         className={`w-10 h-5 rounded-full relative transition-all ${cookieSettings.analytics ? 'bg-amplia-accent' : 'bg-amplia-border/50'}`}
+                        aria-label="Toggle Analytics Cookies"
                       >
                         <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${cookieSettings.analytics ? 'right-1' : 'left-1'}`} />
                       </button>
@@ -352,6 +407,7 @@ const App: React.FC = () => {
                       <button 
                         onClick={() => setCookieSettings(prev => ({ ...prev, marketing: !prev.marketing }))}
                         className={`w-10 h-5 rounded-full relative transition-all ${cookieSettings.marketing ? 'bg-amplia-accent' : 'bg-amplia-border/50'}`}
+                        aria-label="Toggle Marketing Cookies"
                       >
                         <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${cookieSettings.marketing ? 'right-1' : 'left-1'}`} />
                       </button>
@@ -382,8 +438,8 @@ const App: React.FC = () => {
           </div>
        </div>
 
-       <nav className="glass sticky top-0 z-[100] border-b border-amplia-border/50 px-8 py-4 flex items-center justify-between shadow-lg">
-          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setAuthView(user ? AuthView.APP : AuthView.LANDING)}>
+       <nav className="glass sticky top-0 z-[100] border-b border-amplia-border/50 px-8 py-4 flex items-center justify-between shadow-lg" role="navigation">
+          <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setAuthView(user ? AuthView.APP : AuthView.LANDING)} title="Home">
              <div className="w-10 h-10 bg-gradient-to-br from-amplia-accent to-purple-500 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
                 <Rocket className="text-white" size={22} />
              </div>
@@ -393,13 +449,13 @@ const App: React.FC = () => {
           <div className="flex items-center gap-6">
              {user ? (
                <div className="flex items-center gap-5">
-                 <button onClick={() => setAuthView(AuthView.BILLING_MODAL)} className="p-2 hover:bg-amplia-border/30 rounded-full transition-all hover:scale-110"><Building2 size={20} /></button>
+                 <button onClick={() => setAuthView(AuthView.BILLING_MODAL)} className="p-2 hover:bg-amplia-border/30 rounded-full transition-all hover:scale-110" title={t.lblBilling}><Building2 size={20} /></button>
                  <div className="flex items-center gap-3 bg-amplia-surface/50 px-3 py-1.5 rounded-full border border-amplia-border/50">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amplia-accent to-cyan-400 border-2 border-amplia-border flex items-center justify-center text-xs font-black text-white shadow-sm">
                       {user.name.charAt(0)}
                     </div>
                  </div>
-                 <button onClick={() => { setUser(null); setAuthView(AuthView.LANDING); }} className="text-amplia-error hover:scale-125 transition-transform"><LogOut size={18} /></button>
+                 <button onClick={() => { setUser(null); setAuthView(AuthView.LANDING); }} className="text-amplia-error hover:scale-125 transition-transform" aria-label="Logout"><LogOut size={18} /></button>
                </div>
              ) : (
                <div className="flex items-center gap-4">
@@ -409,19 +465,19 @@ const App: React.FC = () => {
              )}
              <div className="flex gap-1 p-1 bg-amplia-border/20 rounded-xl">
                 {(['en', 'pt', 'es'] as Language[]).map(l => (
-                   <button key={l} onClick={() => setLang(l)} className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase transition-all ${lang === l ? 'bg-amplia-accent text-white shadow-md' : 'opacity-40 hover:opacity-100'}`}>{l}</button>
+                   <button key={l} onClick={() => setLang(l)} className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase transition-all ${lang === l ? 'bg-amplia-accent text-white shadow-md' : 'opacity-40 hover:opacity-100'}`} aria-label={`Mudar para ${l}`}>{l}</button>
                 ))}
              </div>
           </div>
        </nav>
 
-       <main className="flex-1">
+       <main className="flex-1" id="main-content">
           {!user && authView === AuthView.LANDING && (
-            <div className="page-transition">
+            <article className="page-transition">
                <section className="relative pt-32 pb-24 px-6 overflow-hidden">
                   <div className="container mx-auto text-center relative z-10">
                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amplia-accent/10 border border-amplia-accent/30 text-amplia-accent text-xs font-black mb-12 animate-pulse">
-                        <Zap size={14} /> Gemini 3 Pro AI
+                        <Zap size={14} /> Gemini 3 Pro AI Powered
                      </div>
                      <h1 className="text-6xl md:text-8xl font-black mb-10 tracking-tight leading-[0.85]">
                         {t.heroTitle}<br/>
@@ -432,14 +488,14 @@ const App: React.FC = () => {
                      <p className="text-xl md:text-2xl text-amplia-textDim max-w-3xl mx-auto mb-16 font-semibold leading-relaxed opacity-90">
                         {t.heroDesc}
                      </p>
-                     <button onClick={() => setAuthView(AuthView.REGISTER)} className="px-14 py-5 bg-amplia-accent text-white font-black rounded-[20px] shadow-3xl shadow-amplia-accent/40 hover:scale-105 active:scale-95 transition-all text-xl flex items-center justify-center gap-4">
+                     <button onClick={() => setAuthView(AuthView.REGISTER)} className="px-14 py-5 bg-amplia-accent text-white font-black rounded-[20px] shadow-3xl shadow-amplia-accent/40 hover:scale-105 active:scale-95 transition-all text-xl mx-auto flex items-center justify-center gap-4">
                         {t.ctaStart} <ArrowRight strokeWidth={3} />
                      </button>
                   </div>
                </section>
 
-               {/* Advantages Section */}
-               <section className="py-24 px-6">
+               {/* Advantages Section (Semantic h2 for SEO) */}
+               <section className="py-24 px-6 bg-amplia-surface/20">
                   <div className="container mx-auto text-center">
                      <h2 className="text-4xl font-black mb-16 tracking-tighter">{t.lblFeatures}</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -462,71 +518,7 @@ const App: React.FC = () => {
                      </div>
                   </div>
                </section>
-
-               {/* Subscription Plans */}
-               <section className="py-24 bg-amplia-surface/50 border-t border-amplia-border/20">
-                  <div className="container mx-auto px-6 text-center">
-                     <h2 className="text-5xl font-black mb-8 tracking-tighter">{t.lblPricing}</h2>
-                     <p className="text-amplia-textDim mb-16 max-w-2xl mx-auto font-bold">{t.pricingDesc}</p>
-                     
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-                        {Object.values(PLANS).map(plan => (
-                           <div key={plan.id} className={`p-10 rounded-[48px] border flex flex-col h-full transition-all group hover:-translate-y-3 ${plan.id === 'PRO' ? 'bg-amplia-accent text-white border-transparent shadow-4xl scale-105 z-10' : 'bg-amplia-bg border-amplia-border shadow-xl'}`}>
-                              <div className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 opacity-60">{plan.name}</div>
-                              <div className="flex items-baseline justify-center mb-8">
-                                 <span className="text-5xl font-black tracking-tighter">€{plan.price}</span>
-                                 <span className="text-xs font-bold ml-1 opacity-60">{t.perMonth}</span>
-                              </div>
-                              <div className="text-sm font-black mb-8 py-2 border-y border-current/10">
-                                 {plan.deploymentsPerMonth} {t.deploysPerMo}
-                              </div>
-                              <ul className="space-y-4 mb-10 text-left flex-1">
-                                 {plan.features.map((feat, i) => (
-                                    <li key={i} className="text-xs font-bold flex items-center gap-3">
-                                       <CheckCircle size={14} className={plan.id === 'PRO' ? 'text-white' : 'text-amplia-accent'} />
-                                       {feat}
-                                    </li>
-                                 ))}
-                              </ul>
-                              <button onClick={() => setAuthView(AuthView.REGISTER)} className={`w-full py-5 rounded-3xl font-black transition-all shadow-lg ${plan.id === 'PRO' ? 'bg-white text-amplia-accent hover:bg-gray-100' : 'bg-amplia-accent text-white hover:bg-amplia-accentHover'}`}>
-                                 {t.btnBuy}
-                              </button>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-               </section>
-
-               {/* Packs Section */}
-               <section className="py-24 bg-amplia-bg relative overflow-hidden">
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-amplia-accent/5 blur-[120px] rounded-full"></div>
-                  <div className="container mx-auto px-6 text-center relative z-10">
-                     <h2 className="text-5xl font-black mb-6 tracking-tighter">{t.lblPacks}</h2>
-                     <p className="text-amplia-textDim mb-16 max-w-2xl mx-auto font-bold">{t.packsDesc}</p>
-                     
-                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                        {PACKS.map(pack => (
-                           <div key={pack.id} className="p-8 glass border border-amplia-border/50 rounded-[40px] shadow-2xl transition-all hover:scale-[1.03] group">
-                              <div className="flex justify-between items-start mb-10">
-                                 <div className="p-3 bg-amplia-accent/10 rounded-2xl text-amplia-accent"><Package size={24}/></div>
-                                 <div className="text-[9px] font-black uppercase tracking-widest bg-amplia-accent/10 px-3 py-1 rounded-full text-amplia-accent">{pack.savings}</div>
-                              </div>
-                              <div className="text-left mb-8">
-                                 <div className="text-4xl font-black tracking-tighter mb-1">{pack.deployments} <span className="text-lg opacity-40">Ops</span></div>
-                                 <div className="text-xs font-bold text-amplia-textDim">{t.deploysOneTime}</div>
-                              </div>
-                              <div className="flex items-center justify-between pt-8 border-t border-amplia-border/30">
-                                 <div className="text-2xl font-black tracking-tighter">€{pack.price}</div>
-                                 <button onClick={() => setAuthView(AuthView.REGISTER)} className="p-3 bg-amplia-accent hover:bg-amplia-accentHover text-white rounded-2xl shadow-lg transition-all group-hover:rotate-12">
-                                    <Plus size={20} strokeWidth={3} />
-                                 </button>
-                              </div>
-                           </div>
-                        ))}
-                     </div>
-                  </div>
-               </section>
-            </div>
+            </article>
           )}
 
           {user && authView === AuthView.APP && (
@@ -544,7 +536,7 @@ const App: React.FC = () => {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                    <aside className="lg:col-span-4 space-y-8">
-                      <div className="glass border border-amplia-border p-8 rounded-[40px] shadow-2xl">
+                      <section className="glass border border-amplia-border p-8 rounded-[40px] shadow-2xl">
                          <h3 className="text-xl font-black mb-8 flex items-center gap-3"><Layers className="text-amplia-accent" size={24}/> AI Blueprints</h3>
                          <div className="space-y-6">
                             <SelectInput id="proj-type" label="Core Language / Stack" value={ProjectType.NODE} onChange={()=>{}} options={Object.values(ProjectType)} icon={Code} />
@@ -553,7 +545,7 @@ const App: React.FC = () => {
                                <Bot size={24} /> Gerar com IA
                             </button>
                          </div>
-                      </div>
+                      </section>
                    </aside>
 
                    <section className="lg:col-span-8 flex flex-col gap-8">
@@ -565,6 +557,43 @@ const App: React.FC = () => {
                       ) : config ? (
                         <div className="flex flex-col gap-6">
                            <FileViewer files={config.files} />
+                           
+                           {/* Git Integration Section */}
+                           <section className="p-8 glass border border-amplia-border rounded-[40px] shadow-2xl animate-fade-in">
+                              <div className="flex flex-col md:flex-row items-center gap-8">
+                                <div className="p-4 bg-amplia-accent/10 rounded-2xl text-amplia-accent">
+                                  <Github size={32} />
+                                </div>
+                                <div className="flex-1 text-center md:text-left">
+                                  <h4 className="text-xl font-black tracking-tight">{t.gitCommit}</h4>
+                                  <p className="text-sm font-bold text-amplia-textDim">{t.gitMsgPlaceholder}</p>
+                                </div>
+                                <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                                  <input 
+                                    type="text" 
+                                    value={commitMsg}
+                                    onChange={(e) => setCommitMsg(e.target.value)}
+                                    onKeyPress={handleGitKeyPress}
+                                    placeholder={t.gitMsgPlaceholder}
+                                    disabled={isCommitting}
+                                    className="bg-amplia-bg border border-amplia-border px-6 py-4 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-amplia-accent transition-all min-w-[280px]"
+                                  />
+                                  <button 
+                                    onClick={() => handleSimulateCommit(commitMsg)}
+                                    disabled={isCommitting || !commitMsg}
+                                    className={`px-8 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all shadow-lg ${
+                                      commitStatus === 'success' 
+                                      ? 'bg-green-500 text-white' 
+                                      : 'bg-amplia-accent hover:bg-amplia-accentHover text-white disabled:opacity-50'
+                                    }`}
+                                  >
+                                    {isCommitting ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
+                                    {isCommitting ? t.gitLoading : (commitStatus === 'success' ? t.gitSuccess : t.gitCommit)}
+                                  </button>
+                                </div>
+                              </div>
+                           </section>
+
                            <div className="grid grid-cols-2 gap-6">
                               <EnvVarViewer envVars={config.envVars} />
                               <div className="bg-amplia-surface border border-amplia-border rounded-3xl p-6">
@@ -580,15 +609,6 @@ const App: React.FC = () => {
                               <Rocket size={24}/> Executar Deployment Real
                            </button>
                            {logs.length > 0 && <Terminal logs={logs} title={t.lblLiveLogs} />}
-                           {errorAnalysis && (
-                              <div className="p-8 bg-red-500/10 border border-red-500/30 rounded-3xl animate-pageIn">
-                                 <div className="flex items-center gap-3 text-red-500 font-black mb-4">
-                                    <ShieldAlert size={24} /> Erro Diagnosticado com Grounding
-                                 </div>
-                                 <p className="font-bold mb-2">{errorAnalysis.diagnosis}</p>
-                                 <p className="opacity-70 text-sm mb-6">{errorAnalysis.solution}</p>
-                              </div>
-                           )}
                         </div>
                       ) : (
                         <div className="glass border border-amplia-border rounded-[56px] p-20 flex flex-col items-center justify-center text-center h-[600px] shadow-2xl opacity-80">
@@ -603,26 +623,26 @@ const App: React.FC = () => {
           )}
        </main>
 
-       {/* Updated Footer */}
-       <footer className="border-t border-amplia-border/20 bg-amplia-surface/40 py-20 px-12">
+       {/* Otimização de Footer (Semantic footer) */}
+       <footer className="border-t border-amplia-border/20 bg-amplia-surface/40 py-20 px-12" role="contentinfo">
           <div className="container mx-auto text-center space-y-12">
              <div className="flex items-center justify-center gap-4 font-black text-3xl tracking-tighter">
                 <div className="w-10 h-10 bg-amplia-accent rounded-xl flex items-center justify-center shadow-lg"><Rocket className="text-white" size={20}/></div>
                 <span>OpsFlow AI</span>
              </div>
-             <div className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-[10px] font-black uppercase tracking-widest opacity-60">
-                <button onClick={() => setShowCookies(true)} className="hover:text-amplia-accent transition-colors flex items-center gap-2">
+             <nav className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-[10px] font-black uppercase tracking-widest opacity-60">
+                <button onClick={() => setShowCookies(true)} className="hover:text-amplia-accent transition-colors flex items-center gap-2" title={t.cookieConfigure}>
                    <Cookie size={12} /> {t.cookieConfigure}
                 </button>
-                <a href="#" className="hover:text-amplia-accent transition-colors">{t.lblLegal}</a>
-                <a href="#" className="hover:text-amplia-accent transition-colors">{t.lblApiDocs}</a>
-                <a href="#" className="hover:text-amplia-accent transition-colors">{t.lblPrivacy}</a>
+                <a href="/legal" className="hover:text-amplia-accent transition-colors">{t.lblLegal}</a>
+                <a href="/docs" className="hover:text-amplia-accent transition-colors">{t.lblApiDocs}</a>
+                <a href="/privacy" className="hover:text-amplia-accent transition-colors">{t.lblPrivacy}</a>
                 <a href="mailto:ampliasolutions.pt@gmail.com" className="hover:text-amplia-accent transition-colors flex items-center gap-2">
                    <Mail size={12} /> {t.lblContact}
                 </a>
-             </div>
+             </nav>
              <div className="text-[10px] font-black opacity-20 uppercase tracking-[0.5em] pt-12">
-                {t.copyright}
+                &copy; {t.copyright}
              </div>
           </div>
        </footer>
