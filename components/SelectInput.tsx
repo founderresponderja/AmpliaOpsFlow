@@ -13,7 +13,7 @@ interface SelectInputProps {
 const SelectInput: React.FC<SelectInputProps> = ({ id, label, value, onChange, options, icon: Icon }) => {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="text-sm font-medium text-amplia-textDim">{label}</label>
+      <label htmlFor={id} className="text-sm text-amplia-textDim">{label}</label>
       <div className="relative group">
         <Icon className="absolute left-3 top-3 text-amplia-textDim group-focus-within:text-amplia-accent transition-colors w-5 h-5" aria-hidden="true" />
         <select

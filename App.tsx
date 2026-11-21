@@ -1,3 +1,4 @@
+import { ZarpaSymbol } from './components/ZarpaLogo';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Rocket, Server, Code, ShieldCheck, DollarSign, ArrowRight, Loader2, 
@@ -32,10 +33,10 @@ const PACKS: AIPack[] = [
 
 const TRANSLATIONS = {
   pt: {
-    pageTitle: "OpsFlow | Automação de DevOps com IA",
+    pageTitle: "Zarpa | Deploy com IA",
     heroTitle: "O Futuro do desenvolvimento de aplicações é ",
     heroTitleAccent: "Inteligente.",
-    heroDesc: "O OpsFlow utiliza inteligência artificial avançada para gerar Dockerfiles, CI/CD e cloud configs em segundos. Otimize o seu workflow hoje.",
+    heroDesc: "A Zarpa utiliza inteligência artificial avançada para gerar Dockerfiles, CI/CD e cloud configs em segundos. Otimize o seu workflow hoje.",
     lblFeatures: "Vantagens da Engenharia com IA",
     feature1Title: "Geração de Blueprints",
     feature1Desc: "Dockerfiles e configs de infraestrutura gerados instantaneamente para o seu stack específico.",
@@ -62,7 +63,7 @@ const TRANSLATIONS = {
     deploysOneTime: "Deployments via IA",
     lblLiveLogs: "Consola de Monitorização IA",
     legalConsent: "Aceito os Termos de Serviço e a Política de Privacidade em conformidade com o RGPD.",
-    cookieText: "O OpsFlow utiliza cookies inteligentes para personalizar e otimizar a sua experiência tecnológica.",
+    cookieText: "A Zarpa utiliza cookies para funcionar e, se aceitar, para medir a utilização.",
     cookieAccept: "Aceitar Todos",
     cookieConfigure: "Configurar",
     cookieSave: "Guardar Preferências",
@@ -91,10 +92,10 @@ const TRANSLATIONS = {
     gitError: "Erro ao comunicar com o repositório."
   },
   en: {
-    pageTitle: "OpsFlow | AI-Powered DevOps Automation",
+    pageTitle: "Zarpa | AI-powered deploys",
     heroTitle: "The Future of App Development is ",
     heroTitleAccent: "Smart.",
-    heroDesc: "OpsFlow uses advanced AI to generate Dockerfiles, CI/CD, and cloud configs in seconds. Optimize your workflow today.",
+    heroDesc: "Zarpa uses advanced AI to generate Dockerfiles, CI/CD, and cloud configs in seconds. Optimize your workflow today.",
     lblFeatures: "Engineering Advantages with AI",
     feature1Title: "Blueprint Generation",
     feature1Desc: "Dockerfiles and infrastructure configs generated instantly for your specific stack.",
@@ -121,7 +122,7 @@ const TRANSLATIONS = {
     deploysOneTime: "AI Deployments",
     lblLiveLogs: "AI Monitoring Console",
     legalConsent: "I agree to the Terms of Service and Privacy Policy in compliance with GDPR.",
-    cookieText: "OpsFlow uses smart cookies to personalize and optimize your technology experience.",
+    cookieText: "Zarpa uses cookies to work and, if you accept, to measure usage.",
     cookieAccept: "Accept All",
     cookieConfigure: "Configure",
     cookieSave: "Save Preferences",
@@ -150,10 +151,10 @@ const TRANSLATIONS = {
     gitError: "Error communicating with repository."
   },
   es: {
-    pageTitle: "OpsFlow | Automatización DevOps con IA",
+    pageTitle: "Zarpa | Despliegue con IA",
     heroTitle: "El Futuro del desarrollo de aplicaciones es ",
     heroTitleAccent: "Inteligente.",
-    heroDesc: "OpsFlow utiliza IA avanzada para generar Dockerfiles, CI/CD y cloud configs in segundos. Optimice su workflow hoy.",
+    heroDesc: "Zarpa utiliza IA avanzada para generar Dockerfiles, CI/CD y cloud configs in segundos. Optimice su workflow hoy.",
     lblFeatures: "Ventajas de la Ingeniería con IA",
     feature1Title: "Generación de Blueprints",
     feature1Desc: "Dockerfiles y configs de infraestructura gerados al instante para tu stack específico.",
@@ -180,7 +181,7 @@ const TRANSLATIONS = {
     deploysOneTime: "Despliegues com IA",
     lblLiveLogs: "Consola de Monitoreo IA",
     legalConsent: "Acepto los Términos de Servicio y la Política de Privacidade conforme al RGPD.",
-    cookieText: "OpsFlow utiliza cookies inteligentes para personalizar y optimizar su experiencia tecnológica.",
+    cookieText: "Zarpa utiliza cookies para funcionar y, si acepta, para medir el uso.",
     cookieAccept: "Aceptar Todo",
     cookieConfigure: "Configurar",
     cookieSave: "Guardar Preferencias",
@@ -342,25 +343,25 @@ const App: React.FC = () => {
     <div className="min-h-screen bg-amplia-bg text-amplia-text flex flex-col font-sans transition-all duration-500 ease-in-out selection:bg-amplia-accent/30">
        
        {showCookies && (
-         <div className="fixed bottom-6 left-6 right-6 lg:left-1/2 lg:-translate-x-1/2 lg:w-max z-[1000] glass border border-amplia-border/50 p-6 rounded-[32px] shadow-4xl animate-pageIn overflow-hidden max-w-4xl w-full">
+         <div className="fixed bottom-6 left-6 right-6 lg:left-1/2 lg:-translate-x-1/2 lg:w-max z-[1000] glass border border-amplia-border/50 p-6 rounded-md overflow-hidden max-w-4xl w-full">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col lg:flex-row items-center gap-6">
                 <div className="p-3 bg-amplia-accent/10 rounded-2xl text-amplia-accent shrink-0"><Shield size={24}/></div>
                 <div className="flex-1 text-center lg:text-left">
-                  <p className="text-sm font-bold opacity-80">{t.cookieText}</p>
+                  <p className="text-sm opacity-80">{t.cookieText}</p>
                 </div>
                 {!showCookiePanel && (
                   <div className="flex gap-4 shrink-0">
                     <button 
                       onClick={() => setShowCookiePanel(true)} 
-                      className="px-6 py-3 text-xs font-black uppercase opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2"
+                      className="px-6 py-3 text-xs opacity-60 hover:opacity-100 transition-opacity flex items-center gap-2"
                       title={t.cookieConfigure}
                     >
                       <Settings2 size={14} /> {t.cookieConfigure}
                     </button>
                     <button 
                       onClick={() => saveCookies(true)} 
-                      className="bg-amplia-accent hover:bg-amplia-accentHover text-white px-8 py-3 rounded-2xl text-xs font-black shadow-lg transition-all"
+                      className="bg-amplia-accent border-2 border-amplia-text shadow-hard hover:bg-amplia-accentHover text-amplia-onAccent px-8 py-3 rounded-2xl text-xs transition-all"
                     >
                       {t.cookieAccept}
                     </button>
@@ -369,22 +370,22 @@ const App: React.FC = () => {
               </div>
 
               {showCookiePanel && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 border-t border-amplia-border/30 animate-pageIn">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 border-t border-amplia-border/30">
                   <div className="p-4 bg-amplia-surface/50 rounded-2xl border border-amplia-border/30 flex flex-col justify-between">
                     <div>
-                      <h4 className="text-xs font-black uppercase tracking-widest mb-1">{t.cookieEssential}</h4>
-                      <p className="text-[10px] opacity-50 font-bold">{t.cookieEssentialDesc}</p>
+                      <h4 className="text-xs mb-1">{t.cookieEssential}</h4>
+                      <p className="text-xs opacity-50">{t.cookieEssentialDesc}</p>
                     </div>
                     <div className="mt-4 flex items-center gap-2">
                        <Check className="text-amplia-accent" size={16} />
-                       <span className="text-[10px] font-black uppercase text-amplia-accent">Always On</span>
+                       <span className="text-xs text-amplia-accent">Always On</span>
                     </div>
                   </div>
 
                   <div className="p-4 bg-amplia-surface/50 rounded-2xl border border-amplia-border/30 flex flex-col justify-between">
                     <div>
-                      <h4 className="text-xs font-black uppercase tracking-widest mb-1">{t.cookieAnalytics}</h4>
-                      <p className="text-[10px] opacity-50 font-bold">{t.cookieAnalyticsDesc}</p>
+                      <h4 className="text-xs mb-1">{t.cookieAnalytics}</h4>
+                      <p className="text-xs opacity-50">{t.cookieAnalyticsDesc}</p>
                     </div>
                     <div className="mt-4 flex items-center gap-2">
                       <button 
@@ -394,14 +395,14 @@ const App: React.FC = () => {
                       >
                         <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${cookieSettings.analytics ? 'right-1' : 'left-1'}`} />
                       </button>
-                      <span className="text-[10px] font-black uppercase opacity-60">{cookieSettings.analytics ? 'On' : 'Off'}</span>
+                      <span className="text-xs opacity-60">{cookieSettings.analytics ? 'On' : 'Off'}</span>
                     </div>
                   </div>
 
                   <div className="p-4 bg-amplia-surface/50 rounded-2xl border border-amplia-border/30 flex flex-col justify-between">
                     <div>
-                      <h4 className="text-xs font-black uppercase tracking-widest mb-1">{t.cookieMarketing}</h4>
-                      <p className="text-[10px] opacity-50 font-bold">{t.cookieMarketingDesc}</p>
+                      <h4 className="text-xs mb-1">{t.cookieMarketing}</h4>
+                      <p className="text-xs opacity-50">{t.cookieMarketingDesc}</p>
                     </div>
                     <div className="mt-4 flex items-center gap-2">
                       <button 
@@ -411,7 +412,7 @@ const App: React.FC = () => {
                       >
                         <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${cookieSettings.marketing ? 'right-1' : 'left-1'}`} />
                       </button>
-                      <span className="text-[10px] font-black uppercase opacity-60">{cookieSettings.marketing ? 'On' : 'Off'}</span>
+                      <span className="text-xs opacity-60">{cookieSettings.marketing ? 'On' : 'Off'}</span>
                     </div>
                   </div>
                 </div>
@@ -421,7 +422,7 @@ const App: React.FC = () => {
                 <div className="flex justify-end gap-4 border-t border-amplia-border/30 pt-4">
                   <button 
                     onClick={() => saveCookies(false)} 
-                    className="bg-amplia-accent hover:bg-amplia-accentHover text-white px-8 py-3 rounded-2xl text-xs font-black shadow-lg transition-all"
+                    className="bg-amplia-accent border-2 border-amplia-text shadow-hard hover:bg-amplia-accentHover text-amplia-onAccent px-8 py-3 rounded-2xl text-xs transition-all"
                   >
                     {t.cookieSave}
                   </button>
@@ -431,41 +432,39 @@ const App: React.FC = () => {
          </div>
        )}
 
-       <div className="fixed top-20 right-8 z-[150] flex flex-col items-end gap-2 pointer-events-none opacity-40 hover:opacity-100 transition-opacity">
-          <div className="flex items-center gap-2 px-3 py-1 bg-black/80 rounded-lg border border-white/10 text-[9px] font-mono text-white">
+       <div className="fixed top-20 right-8 z-[150] flex flex-col items-end gap-2 pointer-events-none text-amplia-textDim hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-2 px-3 py-1 bg-black/80 rounded-lg border border-white/10 text-xs font-mono text-white">
             <Activity size={10} className="text-green-400" />
             <span>{t.perfMonitor}: {perfMetrics.latency}ms / {perfMetrics.fps} FPS</span>
           </div>
        </div>
 
-       <nav className="glass sticky top-0 z-[100] border-b border-amplia-border/50 px-8 py-4 flex items-center justify-between shadow-lg" role="navigation">
+       <nav className="glass sticky top-0 z-[100] border-b border-amplia-border/50 px-8 py-4 flex items-center justify-between" role="navigation">
           <div className="flex items-center gap-3 cursor-pointer group" onClick={() => setAuthView(user ? AuthView.APP : AuthView.LANDING)} title="Home">
-             <div className="w-10 h-10 bg-gradient-to-br from-amplia-accent to-purple-500 rounded-xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-300">
-                <Rocket className="text-white" size={22} />
-             </div>
-             <span className="font-extrabold text-2xl tracking-tighter hover:text-amplia-accent transition-colors">OpsFlow AI</span>
+             <ZarpaSymbol className="w-10 h-10" />
+             <span className="flex flex-col leading-none"><span className="text-2xl">Zarpa</span><span className="text-xs text-amplia-textDim mt-1">by amplia</span></span>
           </div>
 
           <div className="flex items-center gap-6">
              {user ? (
                <div className="flex items-center gap-5">
-                 <button onClick={() => setAuthView(AuthView.BILLING_MODAL)} className="p-2 hover:bg-amplia-border/30 rounded-full transition-all hover:scale-110" title={t.lblBilling}><Building2 size={20} /></button>
+                 <button onClick={() => setAuthView(AuthView.BILLING_MODAL)} className="p-2 hover:bg-amplia-border/30 rounded-full transition-all" title={t.lblBilling}><Building2 size={20} /></button>
                  <div className="flex items-center gap-3 bg-amplia-surface/50 px-3 py-1.5 rounded-full border border-amplia-border/50">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amplia-accent to-cyan-400 border-2 border-amplia-border flex items-center justify-center text-xs font-black text-white shadow-sm">
+                    <div className="w-8 h-8 rounded-full bg-amplia-accent border-2 border-amplia-border flex items-center justify-center text-xs text-amplia-onAccent">
                       {user.name.charAt(0)}
                     </div>
                  </div>
-                 <button onClick={() => { setUser(null); setAuthView(AuthView.LANDING); }} className="text-amplia-error hover:scale-125 transition-transform" aria-label="Logout"><LogOut size={18} /></button>
+                 <button onClick={() => { setUser(null); setAuthView(AuthView.LANDING); }} className="text-amplia-error transition-transform" aria-label="Logout"><LogOut size={18} /></button>
                </div>
              ) : (
                <div className="flex items-center gap-4">
-                 <button onClick={() => setAuthView(AuthView.LOGIN)} className="font-bold text-sm hover:text-amplia-accent transition-colors">{t.btnLogin}</button>
-                 <button onClick={() => setAuthView(AuthView.REGISTER)} className="bg-amplia-accent hover:bg-amplia-accentHover text-white px-6 py-2.5 rounded-full font-bold text-sm shadow-xl shadow-amplia-accent/20 transition-all hover:-translate-y-1 hover:shadow-2xl">{t.btnRegister}</button>
+                 <button onClick={() => setAuthView(AuthView.LOGIN)} className="text-sm hover:text-amplia-accent transition-colors">{t.btnLogin}</button>
+                 <button onClick={() => setAuthView(AuthView.REGISTER)} className="bg-amplia-accent border-2 border-amplia-text shadow-hard hover:bg-amplia-accentHover text-amplia-onAccent px-6 py-2.5 rounded-full text-sm transition-all hover:-translate-y-1">{t.btnRegister}</button>
                </div>
              )}
              <div className="flex gap-1 p-1 bg-amplia-border/20 rounded-xl">
                 {(['en', 'pt', 'es'] as Language[]).map(l => (
-                   <button key={l} onClick={() => setLang(l)} className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase transition-all ${lang === l ? 'bg-amplia-accent text-white shadow-md' : 'opacity-40 hover:opacity-100'}`} aria-label={`Mudar para ${l}`}>{l}</button>
+                   <button key={l} onClick={() => setLang(l)} className={`px-2.5 py-1 rounded-lg text-xs transition-all ${lang === l ? 'bg-amplia-accent text-amplia-onAccent' : 'text-amplia-textDim hover:text-amplia-text'}`} aria-label={`Mudar para ${l}`}>{l}</button>
                 ))}
              </div>
           </div>
@@ -476,19 +475,19 @@ const App: React.FC = () => {
             <article className="page-transition">
                <section className="relative pt-32 pb-24 px-6 overflow-hidden">
                   <div className="container mx-auto text-center relative z-10">
-                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amplia-accent/10 border border-amplia-accent/30 text-amplia-accent text-xs font-black mb-12 animate-pulse">
-                        <Zap size={14} /> Gemini 3 Pro AI Powered
+                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-black border border-amplia-border text-amplia-accent font-mono text-xs mb-12">
+                        <TerminalIcon size={14} /> Do repositório à produção
                      </div>
-                     <h1 className="text-6xl md:text-8xl font-black mb-10 tracking-tight leading-[0.85]">
+                     <h1 className="text-6xl md:text-8xl mb-10 leading-[0.85]">
                         {t.heroTitle}<br/>
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-amplia-accent via-cyan-400 to-purple-400 animate-gradient-x">
+                        <span className="text-amplia-accent">
                            {t.heroTitleAccent}
                         </span>
                      </h1>
-                     <p className="text-xl md:text-2xl text-amplia-textDim max-w-3xl mx-auto mb-16 font-semibold leading-relaxed opacity-90">
+                     <p className="text-xl md:text-2xl text-amplia-textDim max-w-3xl mx-auto mb-16 leading-relaxed opacity-90">
                         {t.heroDesc}
                      </p>
-                     <button onClick={() => setAuthView(AuthView.REGISTER)} className="px-14 py-5 bg-amplia-accent text-white font-black rounded-[20px] shadow-3xl shadow-amplia-accent/40 hover:scale-105 active:scale-95 transition-all text-xl mx-auto flex items-center justify-center gap-4">
+                     <button onClick={() => setAuthView(AuthView.REGISTER)} className="px-14 py-5 bg-amplia-accent border-2 border-amplia-text shadow-hard text-amplia-onAccent rounded-md transition-all text-xl mx-auto flex items-center justify-center gap-4">
                         {t.ctaStart} <ArrowRight strokeWidth={3} />
                      </button>
                   </div>
@@ -497,22 +496,22 @@ const App: React.FC = () => {
                {/* Advantages Section (Semantic h2 for SEO) */}
                <section className="py-24 px-6 bg-amplia-surface/20">
                   <div className="container mx-auto text-center">
-                     <h2 className="text-4xl font-black mb-16 tracking-tighter">{t.lblFeatures}</h2>
+                     <h2 className="text-4xl mb-16">{t.lblFeatures}</h2>
                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {[
-                           { icon: Box, color: 'text-blue-500', bg: 'bg-blue-500/10', title: t.feature1Title, desc: t.feature1Desc },
-                           { icon: Zap, color: 'text-yellow-500', bg: 'bg-yellow-500/10', title: t.feature2Title, desc: t.feature2Desc },
-                           { icon: ShieldCheck, color: 'text-green-500', bg: 'bg-green-500/10', title: t.feature3Title, desc: t.feature3Desc },
-                           { icon: Eye, color: 'text-purple-500', bg: 'bg-purple-500/10', title: t.feature4Title, desc: t.feature4Desc },
-                           { icon: Globe, color: 'text-cyan-500', bg: 'bg-cyan-500/10', title: t.feature5Title, desc: t.feature5Desc },
-                           { icon: Gauge, color: 'text-red-500', bg: 'bg-red-500/10', title: t.feature6Title, desc: t.feature6Desc },
+                           { icon: Box, color: 'text-amplia-accent', bg: 'bg-black border border-amplia-border', title: t.feature1Title, desc: t.feature1Desc },
+                           { icon: Zap, color: 'text-amplia-accent', bg: 'bg-black border border-amplia-border', title: t.feature2Title, desc: t.feature2Desc },
+                           { icon: ShieldCheck, color: 'text-amplia-accent', bg: 'bg-black border border-amplia-border', title: t.feature3Title, desc: t.feature3Desc },
+                           { icon: Eye, color: 'text-amplia-accent', bg: 'bg-black border border-amplia-border', title: t.feature4Title, desc: t.feature4Desc },
+                           { icon: Globe, color: 'text-amplia-accent', bg: 'bg-black border border-amplia-border', title: t.feature5Title, desc: t.feature5Desc },
+                           { icon: Gauge, color: 'text-amplia-accent', bg: 'bg-black border border-amplia-border', title: t.feature6Title, desc: t.feature6Desc },
                         ].map((feature, i) => (
-                           <div key={i} className="p-10 glass border border-amplia-border/40 rounded-[40px] text-left hover:scale-[1.02] transition-all group shadow-xl">
-                              <div className={`w-14 h-14 ${feature.bg} ${feature.color} rounded-2xl flex items-center justify-center mb-8 group-hover:rotate-12 transition-transform`}>
+                           <div key={i} className="p-10 glass border border-amplia-border/40 rounded-md text-left transition-all group">
+                              <div className={`w-14 h-14 ${feature.bg} ${feature.color} rounded-2xl flex items-center justify-center mb-8 transition-transform`}>
                                  <feature.icon size={28} />
                               </div>
-                              <h3 className="text-xl font-black mb-4 tracking-tight">{feature.title}</h3>
-                              <p className="text-sm font-bold text-amplia-textDim leading-relaxed">{feature.desc}</p>
+                              <h3 className="text-xl mb-4">{feature.title}</h3>
+                              <p className="text-sm text-amplia-textDim leading-relaxed">{feature.desc}</p>
                            </div>
                         ))}
                      </div>
@@ -525,23 +524,23 @@ const App: React.FC = () => {
              <div className="container mx-auto px-10 py-16 page-transition">
                 <header className="flex flex-col md:flex-row justify-between items-end gap-12 mb-16">
                    <div className="text-left">
-                      <h2 className="text-5xl font-black mb-3 tracking-tighter">OpsFlow AI Dashboard</h2>
-                      <p className="text-amplia-textDim font-black text-xl opacity-80">Geração de Blueprints e Deployments Inteligentes.</p>
+                      <h2 className="text-5xl mb-3">Os seus envios</h2>
+                      <p className="text-amplia-textDim text-xl opacity-80">Geração de Blueprints e Deployments Inteligentes.</p>
                    </div>
-                   <div className="bg-amplia-surface border border-amplia-border px-8 py-4 rounded-3xl shadow-lg">
-                      <span className="text-[10px] font-black text-amplia-textDim uppercase tracking-widest mb-1 block text-right">{t.quotaLabel}</span>
-                      <span className="text-3xl font-black text-amplia-accent tracking-tighter">{user.deploymentsUsed} / {PLANS[user.plan].deploymentsPerMonth}</span>
+                   <div className="bg-amplia-surface border border-amplia-border px-8 py-4 rounded-3xl">
+                      <span className="text-xs text-amplia-textDim mb-1 block text-right">{t.quotaLabel}</span>
+                      <span className="text-3xl text-amplia-accent">{user.deploymentsUsed} / {PLANS[user.plan].deploymentsPerMonth}</span>
                    </div>
                 </header>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
                    <aside className="lg:col-span-4 space-y-8">
-                      <section className="glass border border-amplia-border p-8 rounded-[40px] shadow-2xl">
-                         <h3 className="text-xl font-black mb-8 flex items-center gap-3"><Layers className="text-amplia-accent" size={24}/> AI Blueprints</h3>
+                      <section className="glass border border-amplia-border p-8 rounded-md">
+                         <h3 className="text-xl mb-8 flex items-center gap-3"><Layers className="text-amplia-accent" size={24}/> AI Blueprints</h3>
                          <div className="space-y-6">
                             <SelectInput id="proj-type" label="Core Language / Stack" value={ProjectType.NODE} onChange={()=>{}} options={Object.values(ProjectType)} icon={Code} />
                             <SelectInput id="target-cloud" label="Cloud Destination" value={DeploymentTarget.AWS} onChange={()=>{}} options={Object.values(DeploymentTarget)} icon={Server} />
-                            <button onClick={startAnalysis} className="w-full bg-amplia-accent hover:bg-amplia-accentHover text-white font-black py-5 rounded-2xl shadow-xl transition-all flex items-center justify-center gap-4 text-lg">
+                            <button onClick={startAnalysis} className="w-full bg-amplia-accent border-2 border-amplia-text shadow-hard hover:bg-amplia-accentHover text-amplia-onAccent py-5 rounded-2xl transition-all flex items-center justify-center gap-4 text-lg">
                                <Bot size={24} /> Gerar com IA
                             </button>
                          </div>
@@ -550,23 +549,23 @@ const App: React.FC = () => {
 
                    <section className="lg:col-span-8 flex flex-col gap-8">
                       {appState === AppState.GENERATING ? (
-                        <div className="glass border border-amplia-border rounded-[48px] p-20 flex flex-col items-center justify-center text-center h-[600px] shadow-2xl">
+                        <div className="glass border border-amplia-border rounded-md p-20 flex flex-col items-center justify-center text-center h-[600px]">
                            <Loader2 className="w-16 h-16 text-amplia-accent animate-spin mb-8" />
-                           <h3 className="text-3xl font-black mb-4 tracking-tight">O Motor de IA está a projetar...</h3>
+                           <h3 className="text-3xl mb-4">O Motor de IA está a projetar...</h3>
                         </div>
                       ) : config ? (
                         <div className="flex flex-col gap-6">
                            <FileViewer files={config.files} />
                            
                            {/* Git Integration Section */}
-                           <section className="p-8 glass border border-amplia-border rounded-[40px] shadow-2xl animate-fade-in">
+                           <section className="p-8 glass border border-amplia-border rounded-md">
                               <div className="flex flex-col md:flex-row items-center gap-8">
                                 <div className="p-4 bg-amplia-accent/10 rounded-2xl text-amplia-accent">
                                   <Github size={32} />
                                 </div>
                                 <div className="flex-1 text-center md:text-left">
-                                  <h4 className="text-xl font-black tracking-tight">{t.gitCommit}</h4>
-                                  <p className="text-sm font-bold text-amplia-textDim">{t.gitMsgPlaceholder}</p>
+                                  <h4 className="text-xl">{t.gitCommit}</h4>
+                                  <p className="text-sm text-amplia-textDim">{t.gitMsgPlaceholder}</p>
                                 </div>
                                 <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
                                   <input 
@@ -576,16 +575,16 @@ const App: React.FC = () => {
                                     onKeyPress={handleGitKeyPress}
                                     placeholder={t.gitMsgPlaceholder}
                                     disabled={isCommitting}
-                                    className="bg-amplia-bg border border-amplia-border px-6 py-4 rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-amplia-accent transition-all min-w-[280px]"
+                                    className="bg-amplia-bg border border-amplia-border px-6 py-4 rounded-2xl text-sm outline-none focus:ring-2 focus:ring-amplia-accent transition-all min-w-[280px]"
                                   />
                                   <button 
                                     onClick={() => handleSimulateCommit(commitMsg)}
                                     disabled={isCommitting || !commitMsg}
-                                    className={`px-8 py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-3 transition-all shadow-lg ${
-                                      commitStatus === 'success' 
-                                      ? 'bg-green-500 text-white' 
-                                      : 'bg-amplia-accent hover:bg-amplia-accentHover text-white disabled:opacity-50'
-                                    }`}
+                                    className={`px-8 py-4 rounded-2xl text-sm flex items-center justify-center gap-3 transition-all ${
+ commitStatus === 'success' 
+ ? 'bg-amplia-success text-amplia-onAccent' 
+ : 'bg-amplia-accent border-2 border-amplia-text shadow-hard hover:bg-amplia-accentHover text-amplia-onAccent disabled:opacity-50'
+ }`}
                                   >
                                     {isCommitting ? <Loader2 size={18} className="animate-spin" /> : <Check size={18} />}
                                     {isCommitting ? t.gitLoading : (commitStatus === 'success' ? t.gitSuccess : t.gitCommit)}
@@ -597,24 +596,24 @@ const App: React.FC = () => {
                            <div className="grid grid-cols-2 gap-6">
                               <EnvVarViewer envVars={config.envVars} />
                               <div className="bg-amplia-surface border border-amplia-border rounded-3xl p-6">
-                                 <h4 className="font-black text-xs uppercase tracking-widest text-amplia-accent mb-4">Recomendações IA</h4>
+                                 <h4 className="text-xs text-amplia-accent mb-4">Recomendações IA</h4>
                                  <ul className="space-y-3">
                                     {config.recommendations.map((rec, i) => (
-                                       <li key={i} className="text-sm font-bold opacity-70 flex gap-2"><Check size={14} className="text-green-500 shrink-0 mt-0.5" /> {rec}</li>
+                                       <li key={i} className="text-sm opacity-70 flex gap-2"><Check size={14} className="text-green-500 shrink-0 mt-0.5" /> {rec}</li>
                                     ))}
                                  </ul>
                               </div>
                            </div>
-                           <button onClick={runDeployment} className="bg-amplia-accent hover:bg-amplia-accentHover text-white px-10 py-5 rounded-2xl font-black shadow-xl transition-all flex items-center justify-center gap-4 text-xl">
-                              <Rocket size={24}/> Executar Deployment Real
+                           <button onClick={runDeployment} className="bg-amplia-accent border-2 border-amplia-text shadow-hard hover:bg-amplia-accentHover text-amplia-onAccent px-10 py-5 rounded-2xl transition-all flex items-center justify-center gap-4 text-xl">
+                              <TerminalIcon size={24}/> Zarpar para produção
                            </button>
                            {logs.length > 0 && <Terminal logs={logs} title={t.lblLiveLogs} />}
                         </div>
                       ) : (
-                        <div className="glass border border-amplia-border rounded-[56px] p-20 flex flex-col items-center justify-center text-center h-[600px] shadow-2xl opacity-80">
+                        <div className="glass border border-amplia-border rounded-md p-20 flex flex-col items-center justify-center text-center h-[600px] opacity-80">
                            <LayoutTemplate size={56} className="text-amplia-accent mb-8" />
-                           <h3 className="text-3xl font-black mb-6 tracking-tight">AI Workspace Pronta</h3>
-                           <p className="text-sm font-bold opacity-50">Selecione o seu stack e destino para começar.</p>
+                           <h3 className="text-3xl mb-6">AI Workspace Pronta</h3>
+                           <p className="text-sm opacity-50">Selecione o seu stack e destino para começar.</p>
                         </div>
                       )}
                    </section>
@@ -626,11 +625,11 @@ const App: React.FC = () => {
        {/* Otimização de Footer (Semantic footer) */}
        <footer className="border-t border-amplia-border/20 bg-amplia-surface/40 py-20 px-12" role="contentinfo">
           <div className="container mx-auto text-center space-y-12">
-             <div className="flex items-center justify-center gap-4 font-black text-3xl tracking-tighter">
-                <div className="w-10 h-10 bg-amplia-accent rounded-xl flex items-center justify-center shadow-lg"><Rocket className="text-white" size={20}/></div>
-                <span>OpsFlow AI</span>
+             <div className="flex items-center justify-center gap-4 text-3xl">
+                <ZarpaSymbol className="w-10 h-10" />
+                <span>Zarpa</span><span className="text-base text-amplia-textDim self-end mb-1">by amplia</span>
              </div>
-             <nav className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-[10px] font-black uppercase tracking-widest opacity-60">
+             <nav className="flex flex-wrap justify-center gap-x-12 gap-y-4 text-xs opacity-60">
                 <button onClick={() => setShowCookies(true)} className="hover:text-amplia-accent transition-colors flex items-center gap-2" title={t.cookieConfigure}>
                    <Cookie size={12} /> {t.cookieConfigure}
                 </button>
@@ -641,7 +640,7 @@ const App: React.FC = () => {
                    <Mail size={12} /> {t.lblContact}
                 </a>
              </nav>
-             <div className="text-[10px] font-black opacity-20 uppercase tracking-[0.5em] pt-12">
+             <div className="text-xs opacity-20 pt-12">
                 &copy; {t.copyright}
              </div>
           </div>

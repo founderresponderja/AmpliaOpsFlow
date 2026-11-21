@@ -26,7 +26,7 @@ const EnvVarViewer: React.FC<EnvVarViewerProps> = ({ envVars }) => {
   return (
     <div className="bg-amplia-surface rounded-lg border border-amplia-border overflow-hidden h-full flex flex-col">
        <div className="p-4 bg-amplia-bg border-b border-amplia-border flex justify-between items-center">
-         <h3 className="font-medium text-amplia-text flex items-center gap-2">
+         <h3 className="text-amplia-text flex items-center gap-2">
            <Lock size={16} className="text-amplia-accent" />
            Environment Variables
          </h3>
@@ -39,7 +39,7 @@ const EnvVarViewer: React.FC<EnvVarViewerProps> = ({ envVars }) => {
          {envVars.map((item, index) => (
            <div key={index} className="bg-[#0d1117] rounded-lg border border-amplia-border p-4 group hover:border-amplia-accent/50 transition-colors">
               <div className="flex justify-between items-start mb-2">
-                 <div className="font-mono text-sm font-bold text-amplia-accent break-all">
+                 <div className="font-mono text-sm text-amplia-accent break-all">
                    {item.key}
                  </div>
                  <button 

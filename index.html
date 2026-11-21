@@ -4,70 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
-    <!-- Primário SEO -->
-    <title>OpsFlow | Automação de DevOps e Deployment com IA Gemini 3 Pro</title>
-    <meta name="title" content="OpsFlow | Automação de DevOps e Deployment com IA Gemini 3 Pro" />
-    <meta name="description" content="Acelere seu desenvolvimento com OpsFlow. Gere Dockerfiles, pipelines CI/CD e infraestrutura Cloud instantaneamente usando IA avançada. Otimize custos e segurança." />
-    <meta name="keywords" content="IA DevOps, Deployment Automático, Gemini 3 Pro, Docker Generator, CI/CD Automation, Cloud Infrastructure, OpsFlow, Software Engineering" />
+    <title>Zarpa by amplia | Ficheiros de deploy gerados com IA</title>
+    <meta name="description" content="A Zarpa lê o seu repositório e gera o Dockerfile, a pipeline de CI/CD e a infraestrutura na cloud, com custo estimado. Reveja e publique." />
     <meta name="author" content="Amplia Solutions" />
-    <meta name="robots" content="index, follow" />
-    <link rel="canonical" href="https://opsflow.amplia.pt/" />
-    <meta name="theme-color" content="#2563EB" />
-
-    <!-- Open Graph / Facebook / LinkedIn -->
+    <meta name="theme-color" content="#0C0D0F" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://opsflow.amplia.pt/" />
-    <meta property="og:title" content="OpsFlow | A Revolução do Deployment com Inteligência Artificial" />
-    <meta property="og:description" content="Transforme código em infraestrutura de produção em segundos. Testado e aprovado por engenheiros DevOps." />
-    <meta property="og:image" content="https://opsflow.amplia.pt/og-preview.jpg" />
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://opsflow.amplia.pt/" />
-    <meta property="twitter:title" content="OpsFlow AI - Autonomous Cloud Deployment" />
-    <meta property="twitter:description" content="Gere Dockerfiles e CI/CD pipelines em segundos com o poder da IA Gemini 3 Pro." />
-    <meta property="twitter:image" content="https://opsflow.amplia.pt/twitter-preview.jpg" />
-
-    <!-- Dados Estruturados JSON-LD (Rich Snippets) -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "OpsFlow AI",
-      "description": "Plataforma de IA para geração automática de configurações de deployment e DevOps.",
-      "url": "https://opsflow.amplia.pt/",
-      "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0.00",
-        "priceCurrency": "EUR"
-      },
-      "featureList": [
-        "AI Dockerfile Generation",
-        "CI/CD Pipeline Automation",
-        "Cloud Cost Optimization",
-        "Real-time Error Diagnosis"
-      ],
-      "author": {
-        "@type": "Organization",
-        "name": "Amplia Solutions"
-      }
-    }
-    </script>
+    <meta property="og:title" content="Zarpa by amplia" />
+    <meta property="og:description" content="Do repositório à produção: Dockerfile, CI/CD e infraestrutura gerados com IA." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" href="/fonts/Max-Regular.woff" as="font" type="font/woff" crossorigin />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://app.lemonsqueezy.com/js/lemon.js" defer></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         darkMode: ['class', '[data-theme="dark"]'],
         theme: {
           extend: {
             fontFamily: {
-              sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+              sans: ['Max', 'Inter', 'sans-serif'],
               mono: ['"JetBrains Mono"', 'monospace'],
             },
             colors: {
@@ -77,6 +40,7 @@
                 border: 'var(--color-border)',
                 accent: 'var(--color-accent)',
                 accentHover: 'var(--color-accent-hover)',
+                onAccent: 'var(--color-on-accent)',
                 text: 'var(--color-text)',
                 textDim: 'var(--color-text-dim)',
                 success: 'var(--color-success)',
@@ -84,51 +48,40 @@
                 error: 'var(--color-error)'
               }
             },
-            animation: {
-              'gradient-x': 'gradient-x 15s ease infinite',
-              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'fade-in': 'pageIn 0.3s ease-out forwards'
-            },
-            keyframes: {
-              'gradient-x': {
-                '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
-                '50%': { 'background-size': '200% 200%', 'background-position': 'right center' }
-              }
-            }
+            boxShadow: { hard: '4px 4px 0 0 var(--color-text)' },
+            borderRadius: { none: '0', sm: '2px', DEFAULT: '4px', md: '4px', lg: '6px', xl: '6px', '2xl': '6px', '3xl': '6px' }
           }
         }
       }
     </script>
     <style>
-      :root {
-        --color-bg: #F8FAFC;
-        --color-surface: #FFFFFF;
-        --color-border: #E2E8F0;
-        --color-accent: #2563EB;
-        --color-accent-hover: #1D4ED8;
-        --color-text: #0F172A;
-        --color-text-dim: #64748B;
-        --color-success: #10B981;
-        --color-warning: #F59E0B;
-        --color-error: #EF4444;
+      /* Zarpa by amplia: só modo escuro (terminal). Preto, Osso e Laranja Contentor. */
+      :root, [data-theme="dark"] {
+        --color-bg: #15171A;
+        --color-surface: #1E2125;
+        --color-border: #3A3E44;
+        --color-accent: #FF6A1A;
+        --color-accent-hover: #FF7E33;
+        --color-on-accent: #0C0D0F;
+        --color-text: #EDE9E1;
+        --color-text-dim: #A19D95;
+        --color-success: #75E0A7;
+        --color-warning: #FFC29E;
+        --color-error: #F97066;
+        color-scheme: dark;
       }
 
-      [data-theme="dark"] {
-        --color-bg: #0A0A0C;
-        --color-surface: #121217;
-        --color-border: #26262E;
-        --color-accent: #38BDF8;
-        --color-accent-hover: #7DD3FC;
-        --color-text: #F1F5F9;
-        --color-text-dim: #94A3B8;
-        --color-success: #34D399;
-        --color-warning: #FBBF24;
-        --color-error: #F87171;
+      @font-face {
+        font-family: 'Max';
+        src: url('/fonts/Max-Regular.woff') format('woff');
+        font-weight: 100 900;
+        font-display: swap;
       }
-      
+
       * {
-        font-family: 'Max-Regular' !important;
-        letter-spacing: -0.02em;
+        font-family: 'Max', 'Inter', sans-serif !important;
+        font-weight: 400 !important;
+        font-synthesis: none;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
       }
@@ -144,18 +97,18 @@
         overflow-x: hidden;
       }
 
+      /* antes «glass» (desfoque); agora superfície sólida */
       .glass {
-        background: rgba(var(--color-surface), 0.7);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
+        background: var(--color-surface);
       }
+      @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
       .page-transition {
-        animation: pageIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: pageIn 0.2s ease-out;
       }
 
       @keyframes pageIn {
-        from { opacity: 0; transform: translateY(20px); }
+        from { opacity: 0; transform: translateY(4px); }
         to { opacity: 1; transform: translateY(0); }
       }
 
@@ -164,22 +117,9 @@
       ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 10px; }
       ::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
     </style>
-    <script type="importmap">
-    {
-      "imports": {
-        "react/": "https://esm.sh/react@^19.2.1/",
-        "react": "https://esm.sh/react@^19.2.1",
-        "lucide-react": "https://esm.sh/lucide-react@^0.560.0",
-        "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
-        "react-dom/": "https://esm.sh/react-dom@^19.2.1/",
-        "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.39.0",
-        "jspdf": "https://esm.sh/jspdf@^2.5.1",
-        "@emailjs/browser": "https://esm.sh/@emailjs/browser@^4.4.1"
-      }
-    }
-    </script>
   </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

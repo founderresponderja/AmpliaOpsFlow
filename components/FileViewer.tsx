@@ -33,11 +33,11 @@ const FileViewer: React.FC<FileViewerProps> = ({ files }) => {
             aria-selected={activeTab === index}
             aria-controls={`panel-${index}`}
             onClick={() => setActiveTab(index)}
-            className={`px-4 py-3 text-sm font-medium flex items-center gap-2 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amplia-accent ${
-              activeTab === index
-                ? 'bg-amplia-surface text-amplia-text border-b-2 border-amplia-accent'
-                : 'text-amplia-textDim hover:text-amplia-text hover:bg-amplia-surface'
-            }`}
+            className={`px-4 py-3 text-sm flex items-center gap-2 transition-colors whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-inset focus:ring-amplia-accent ${
+ activeTab === index
+ ? 'bg-amplia-surface text-amplia-text border-b-2 border-amplia-accent'
+ : 'text-amplia-textDim hover:text-amplia-text hover:bg-amplia-surface'
+ }`}
           >
             <FileCode size={14} aria-hidden="true" />
             {file.filename}

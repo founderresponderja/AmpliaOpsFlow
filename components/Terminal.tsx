@@ -16,13 +16,13 @@ const Terminal: React.FC<TerminalProps> = ({ logs, title = "Deployment Logs" }) 
 
   return (
     <div 
-      className="bg-amplia-surface rounded-lg overflow-hidden border border-amplia-border shadow-2xl font-mono text-sm h-full flex flex-col"
+      className="bg-amplia-surface rounded-lg overflow-hidden border border-amplia-border font-mono text-sm h-full flex flex-col"
       role="region"
       aria-label={title}
     >
       <div className="bg-amplia-bg px-4 py-2 flex items-center gap-2 border-b border-amplia-border">
         <TerminalIcon size={16} className="text-amplia-textDim" aria-hidden="true" />
-        <span className="text-amplia-textDim font-medium">{title}</span>
+        <span className="text-amplia-textDim">{title}</span>
         <div className="flex-1"></div>
         <div className="flex gap-1.5" aria-hidden="true">
           <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
@@ -41,16 +41,16 @@ const Terminal: React.FC<TerminalProps> = ({ logs, title = "Deployment Logs" }) 
           <div className="text-gray-500 italic">Waiting for process to start...</div>
         )}
         {logs.map((log, index) => (
-          <div key={index} className="flex gap-3 animate-fade-in">
+          <div key={index} className="flex gap-3">
             <span className="text-gray-500 shrink-0 select-none" aria-hidden="true">
               {log.timestamp}
             </span>
             <span className={`break-all ${
-              log.level === 'error' ? 'text-red-400' :
-              log.level === 'warning' ? 'text-yellow-400' :
-              log.level === 'success' ? 'text-green-400' :
-              'text-gray-300'
-            }`}>
+ log.level === 'error' ? 'text-red-400' :
+ log.level === 'warning' ? 'text-yellow-400' :
+ log.level === 'success' ? 'text-green-400' :
+ 'text-gray-300'
+ }`}>
               <span className="sr-only">{log.level}: </span>
               <span aria-hidden="true" className="select-none mr-2">
                 {log.level === 'success' ? '✓' : log.level === 'error' ? '✗' : '>'}
